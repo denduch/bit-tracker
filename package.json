@@ -1,0 +1,20 @@
+{
+  "name": "bit-tracker-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension with popup and service worker",
+  "scripts": {
+    "build": "echo 'Extension ready to load'",
+    "dev": "echo 'Load extension in Chrome from this directory'"
+  },
+  "dependencies": {
+    "node-html-parser": "^6.1.10",
+    "petite-vue": "^0.4.1"
+  },
+  "keywords": [
+    "chrome-extension",
+    "petite-vue",
+    "html-parser"
+  ],
+  "author": "",
+  "license": "MIT"
+}

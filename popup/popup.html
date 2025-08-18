@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bit Tracker</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div id="app" v-scope="PopupApp()">
+        <div class="header">
+            <h1>{{ title }}</h1>
+        </div>
+        
+        <div class="content">
+            <div class="status" :class="{ active: isActive }">
+                Status: {{ status }}
+            </div>
+            
+            <button @click="toggleTracking" :disabled="loading">
+                {{ loading ? 'Ładowanie...' : (isActive ? 'Zatrzymaj' : 'Rozpocznij') }}
+            </button>
+            
+            <div v-if="data.length > 0" class="results">
+                <h3>Wyniki:</h3>
+                <ul>
+                    <li v-for="item in data" :key="item.id">
+                        {{ item.name }} - {{ item.value }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="../node_modules/petite-vue/dist/petite-vue.iife.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
