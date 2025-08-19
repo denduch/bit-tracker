@@ -6,12 +6,8 @@
     "build": "echo 'Extension ready to load'",
     "dev": "echo 'Load extension in Chrome from this directory'"
   },
-  "dependencies": {
-    "node-html-parser": "^6.1.13"
-  },
   "keywords": [
     "chrome-extension",
-    "html-parser",
     "web-components"
   ],
   "author": "",
