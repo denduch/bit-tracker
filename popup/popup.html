@@ -5,13 +5,21 @@
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
+    <div class="settings-container">
+        <label class="toggle-switch">
+            <input type="checkbox" id="mock-toggle">
+            <span class="slider"></span>
+        </label>
+        <span>Use Mocks</span>
+    </div>
     <tab-view>
         <artists-view class="panel" slot="artists"></artists-view>
         <events-view class="panel" slot="events"></events-view>
     </tab-view>
 
-    <script src="components/tab-view.js"></script>
-    <script src="components/artists-view.js"></script>
-    <script src="components/events-view.js"></script>
+    <script type="module" src="components/tab-view.js"></script>
+    <script type="module" src="components/artists-view.js"></script>
+    <script type="module" src="components/events-view.js"></script>
+    <script type="module" src="popup.js"></script>
 </body>
 </html>

@@ -8,16 +8,17 @@
     "storage"
   ],
   "icons": {
-    "16": "assets/logo-t.png",
-    "48": "assets/logo-t.png",
-    "128": "assets/logo-t.png"
+    "16": "assets/logo-16.png",
+    "48": "assets/logo-48.png",
+    "128": "assets/logo-128.png"
   },
   "action": {
     "default_popup": "popup/popup.html",
     "default_title": "Bit Tracker"
   },
   "background": {
-    "service_worker": "background/service-worker.js"
+    "service_worker": "background/service-worker.js",
+    "type": "module"
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"

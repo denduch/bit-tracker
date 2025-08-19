@@ -1,51 +1,55 @@
-# Bit Tracker Chrome Extension
+# Bit Tracker Extension
 
-Wtyczka Chrome z popup-em i service worker-em w tle.
+A Chrome browser extension for tracking information, featuring a user interface (popup) and a background service worker.
 
-## Struktura projektu
+## Project Structure
 
 ```
 bit-tracker/
-├── manifest.json           # Konfiguracja rozszerzenia
+├── manifest.json           # Main extension configuration file
+├── assets/
+│   └── logo.png            # Graphics and icon assets
 ├── popup/
-│   ├── popup.html          # Interface popup-a
-│   ├── popup.css           # Style popup-a
-│   └── popup.js            # Logika popup-a (petite-vue)
+│   ├── popup.html          # HTML structure for the user interface
+│   ├── popup.css           # Styles for the interface
+│   ├── popup.js            # Main logic for the interface
+│   └── components/         # Web Components for different views
+│       ├── artists-view.js
+│       └── events-view.js
 ├── background/
-│   └── service-worker.js   # Service worker w tle
-├── node_modules/
-│   └── petite-vue/         # Biblioteka petite-vue z npm
-└── package.json            # Konfiguracja npm
+│   └── service-worker.js   # Background logic
+├── mocks/
+│   └── artist-mock.html    # Test data and mocks
+└── package.json            # Project dependencies and scripts
 ```
 
-## Technologie
+## Technologies
 
-- **Frontend (Popup)**: petite-vue - lekka wersja Vue.js
-- **Backend (Service Worker)**: Vanilla JavaScript z node-html-parser
-- **Styling**: CSS z gradientami i animacjami
+- **Frontend (Popup)**: HTML, CSS, Vanilla JavaScript with Web Components.
+- **Backend (Service Worker)**: Vanilla JavaScript and `node-html-parser` for data processing.
+- **Dependency Management**: npm.
 
-## Instalacja
+## Installation
 
-1. Zainstaluj zależności:
-```bash
-npm install
-```
+1.  **Install project dependencies** using npm:
+    ```bash
+    npm install
+    ```
 
-2. Załaduj rozszerzenie w Chrome:
-   - Otwórz `chrome://extensions/`
-   - Włącz "Tryb programisty"
-   - Kliknij "Załaduj rozpakowane"
-   - Wybierz folder projektu
+2.  **Load the extension** in Google Chrome:
+    -   Navigate to `chrome://extensions/`.
+    -   Enable "Developer mode".
+    -   Click "Load unpacked".
+    -   Select the entire `bit-tracker` project folder.
 
-## Funkcjonalność
+## Features
 
-- **Popup**: Interface użytkownika z przyciskami start/stop
-- **Service Worker**: Działa w tle, śledzi aktywne karty
-- **Przechowywanie**: Zapisuje stan w chrome.storage
-- **Tracking**: Okresowo zbiera dane o aktywnych kartach
+- **User Interface (Popup)**: Allows interaction with the main features of the extension. Built with components to display different views, such as artists (`artists-view`) and events (`events-view`).
+- **Service Worker**: A background script that handles business logic, even when the popup is closed.
+- **Data Storage**: Application state and user data are saved using the `chrome.storage` API.
+- **Communication**: The popup communicates with the service worker to exchange data and delegate tasks.
 
-## Uwagi
+## Notes
 
-- node-html-parser wymaga dodatkowej konfiguracji dla Chrome Extensions
-- Alternatywnie można użyć wbudowanego DOMParser API
-- Extension używa Manifest V3
+- The extension is compliant with the **Manifest V3** specification.
+- Using `node-html-parser` in the service worker may require special attention to Content Security Policy (CSP) handling.
