@@ -1,7 +1,7 @@
-// background/api/index.js
+// background/api/index.ts
 
-import { liveProvider } from './live-provider.js';
-import { mockProvider } from './mock-provider.js';
+import { liveProvider } from './live-provider';
+import { mockProvider } from './mock-provider';
 
 async function getProvider() {
   const { useMocks = true } = await chrome.storage.local.get('useMocks');

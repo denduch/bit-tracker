@@ -9,6 +9,10 @@ class EventsView extends HTMLElement {
     }
 
     render() {
+        if (!this.shadowRoot) {
+            return;
+        }
+
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="components/events-view.css">
             <div>

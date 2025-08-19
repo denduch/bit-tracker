@@ -2,7 +2,7 @@
 
 async function getTrackedArtists() {
   console.log('Fetching artists from mock JSON file...');
-  const response = await fetch('../mocks/artist-list-mock.json');
+  const response = await fetch('/mocks/artist-list-mock.json');
   if (!response.ok) {
     throw new Error(`Failed to fetch mock artists: ${response.statusText}`);
   }

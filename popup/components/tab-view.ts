@@ -11,6 +11,7 @@ class TabView extends HTMLElement {
     }
 
     render() {
+        if (!this.shadowRoot) return;
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="components/tab-view.css">
             <div class="tabs">
@@ -25,20 +26,25 @@ class TabView extends HTMLElement {
     }
 
     addEventListeners() {
+        if (!this.shadowRoot) return;
         this.shadowRoot.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', (event) => {
-                this.switchTab(event.currentTarget.dataset.tab);
+                const tabName = (event.currentTarget as HTMLElement).dataset.tab;
+                if (tabName) {
+                    this.switchTab(tabName);
+                }
             });
         });
     }
 
-    switchTab(tabName) {
+    switchTab(tabName: string) {
+        if (!this.shadowRoot) return;
         this.shadowRoot.querySelectorAll('.tab').forEach(tab => {
-            tab.classList.toggle('active', tab.dataset.tab === tabName);
+            (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.tab === tabName);
         });
 
-        this.querySelectorAll('.panel').forEach(panel => {
-            panel.style.display = panel.slot === tabName ? 'block' : 'none';
+        this.querySelectorAll('[slot]').forEach(panel => {
+            (panel as HTMLElement).style.display = panel.slot === tabName ? 'block' : 'none';
         });
     }
 }
