@@ -7,13 +7,12 @@
     "dev": "echo 'Load extension in Chrome from this directory'"
   },
   "dependencies": {
-    "node-html-parser": "^6.1.10",
-    "petite-vue": "^0.4.1"
+    "node-html-parser": "^6.1.10"
   },
   "keywords": [
     "chrome-extension",
-    "petite-vue",
-    "html-parser"
+    "html-parser",
+    "web-components"
   ],
   "author": "",
   "license": "MIT"
