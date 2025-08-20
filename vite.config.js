@@ -1,13 +1,16 @@
 import { defineConfig } from 'vite';
-import webExtension from 'vite-plugin-web-extension';
+import { resolve } from 'path';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  minify: false,
   plugins: [
     viteStaticCopy({
       targets: [
+        {
+          src: 'manifest.json',
+          dest: '.'
+        },
         {
           src: 'assets',
           dest: '.'
@@ -16,11 +19,28 @@ export default defineConfig({
           src: 'mocks',
           dest: '.'
         },
+        {
+          src: 'popup/popup.html',
+          dest: '.'
+        }
       ]
-    }),
-    webExtension
-    ({
-      manifest: 'manifest.json',
-    }),
+    })
   ],
+  build: {
+    minify: false,
+    outDir: resolve(__dirname, 'dist'),
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        'service-worker': resolve(__dirname, 'background/service-worker.ts'),
+        popup: resolve(__dirname, 'popup/popup.ts'),
+        popup_css: resolve(__dirname, 'popup/popup.css'),
+      },
+      output: {
+        entryFileNames: '[name].js',
+        chunkFileNames: 'chunks/[name].js',
+        assetFileNames: 'assets/[name][extname]',
+      },
+    },
+  },
 });

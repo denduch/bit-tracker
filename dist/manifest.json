@@ -1,1 +1,26 @@
-{"manifest_version":3,"name":"Bit Tracker Extension","version":"1.0","description":"Chrome extension with popup and service worker","permissions":["activeTab","storage"],"icons":{"16":"assets/logo-16.png","48":"assets/logo-48.png","128":"assets/logo-128.png"},"action":{"default_popup":"popup/popup.html","default_title":"Bit Tracker"},"background":{"service_worker":"background/service-worker.js","type":"module"},"content_security_policy":{"extension_pages":"script-src 'self'; object-src 'self';"}}
+{
+  "manifest_version": 3,
+  "name": "Bit Tracker Extension",
+  "version": "1.0",
+  "description": "Chrome extension with popup and service worker",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "icons": {
+    "16": "assets/logo-16.png",
+    "48": "assets/logo-48.png",
+    "128": "assets/logo-128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Bit Tracker"
+  },
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  }
+}
