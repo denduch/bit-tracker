@@ -1,5 +1,6 @@
 import { communicator, MessageType } from '../common/messaging';
 import { store } from './store';
+import './popup.css';
 import './components/tab-view';
 import './components/artists-view';
 import './components/events-view';
