@@ -3,19 +3,13 @@
   "version": "1.0.0",
   "description": "Chrome extension with popup and service worker",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite build --watch"
+    "build": "echo 'Extension ready to load'",
+    "dev": "echo 'Load extension in Chrome from this directory'"
   },
   "keywords": [
     "chrome-extension",
     "web-components"
   ],
   "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/chrome": "^0.1.4",
-    "typescript": "^5.9.2",
-    "vite": "^7.1.3",
-    "vite-plugin-static-copy": "^3.1.1"
-  }
+  "license": "MIT"
 }

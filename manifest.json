@@ -13,11 +13,11 @@
     "128": "assets/logo-128.png"
   },
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "popup/popup.html",
     "default_title": "Bit Tracker"
   },
   "background": {
-    "service_worker": "service-worker.js",
+    "service_worker": "background/service-worker.js",
     "type": "module"
   },
   "content_security_policy": {

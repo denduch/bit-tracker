@@ -1,11 +1,11 @@
-import { store } from '../store';
+import { store } from '../store.js';
 
 class ArtistsView extends HTMLElement {
-    private handleStoreUpdate: () => void;
-
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        // Create a bound function to use as the listener.
+        // This ensures 'this' inside render refers to the component instance.
         this.handleStoreUpdate = this.render.bind(this);
     }
 
@@ -19,10 +19,6 @@ class ArtistsView extends HTMLElement {
     }
 
     render() {
-        if (!this.shadowRoot) {
-            return;
-        }
-
         const { artists, isLoading } = store.getState();
 
         this.shadowRoot.innerHTML = `
