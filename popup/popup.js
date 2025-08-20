@@ -30,8 +30,6 @@ async function initializeMockToggle() {
   toggle.addEventListener('change', async (event) => {
     const newUseMocks = event.target.checked;
     await chrome.storage.local.set({ useMocks: newUseMocks });
-    // Refetch artists with the new setting
-    await fetchArtists();
   });
 }
 
