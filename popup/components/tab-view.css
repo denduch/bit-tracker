@@ -1,16 +1,28 @@
+@layer base, layout;
+
 .tabs {
-    display: flex;
-    border-bottom: 1px solid var(--color-border-primary);
+    @layer layout {
+        display: flex;
+        border-bottom: 1px solid var(--color-border-primary);
+        position: sticky;
+        top: 0;
+        background-color: var(--color-background-main);
+        z-index: 1;
+    }
 
     .tab {
-        padding: 10px 15px;
-        cursor: pointer;
-        border: none;
-        background: none;
-        font-size: 16px;
-        color: var(--color-text-secondary);
-        border-bottom: 2px solid transparent;
-        transition: color 0.3s ease;
+        @layer base {
+            flex: 1;
+            text-align: center;
+            padding: 10px 15px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: color 0.3s ease;
+        }
 
         &:hover {
             color: var(--color-text-primary);
@@ -25,9 +37,13 @@
 }
 
 .panels {
-    padding: 15px;
+    @layer layout {
+        padding: 10px;
+    }
 }
 
 ::slotted(.panel) {
-    display: none;
+    @layer layout {
+        display: none;
+    }
 }

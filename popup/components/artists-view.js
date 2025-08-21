@@ -27,9 +27,22 @@ class ArtistsView extends HTMLElement {
                 <h2>Artists</h2>
                 ${isLoading ? '<p>Loading artists...</p>' : `
                     ${artists.length > 0 ? `
-                        <ul>
-                            ${artists.map(artist => `<li>${artist.name}</li>`).join('')}
-                        </ul>
+                        <div class="artist-list">
+                            ${artists.map(artist => `
+                                <div class="artist-tile">
+                                    <div class="artist-image">
+                                        <img src="${artist.properlySizedArtistImageURL}" alt="${artist.name}">
+                                    </div>
+                                    <div class="artist-details">
+                                        <div class="artist-name">${artist.name}</div>
+                                        <div class="tracker-count">${artist.tracker_count.toLocaleString()} followers</div>
+                                    </div>
+                                    <div class="artist-status">
+                                        ${artist.on_tour ? '<span class="on-tour">On Tour</span>' : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
                     ` : '<p>No artists found.</p>'}
                 `}
             </div>
