@@ -1,20 +1,4 @@
 class Communicator {
-  /**
-   * Sends a request and waits for a response.
-   * @param {string} type - The type of the request, e.g., 'GET_ARTISTS'.
-   * @param {any} [payload] - Additional data to send.
-   * @returns {Promise<any>}
-   */
-  get(type, payload) {
-    return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({ type, payload }, (response) => {
-        if (chrome.runtime.lastError) {
-          return reject(chrome.runtime.lastError);
-        }
-        resolve(response);
-      });
-    });
-  }
 
   /**
    * Registers a handler function for a given request type.
@@ -23,11 +7,42 @@ class Communicator {
    */
   on(type, handler) {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      console.log("ON MESSAGE:", message);
       if (message.type === type) {
-        const result = handler(message.payload, sender);
-        Promise.resolve(result).then(sendResponse);
-        return true; // Indicates an asynchronous response.
+        // This listener is for events, so we don't send a response.
+        handler(message.payload, sender);
       }
+    });
+  }
+
+  /**
+   * Broadcasts a message to all listeners without waiting for a response.
+   * @param {string} type The message type.
+   * @param {*} [payload] The message payload.
+   */
+  async broadcast(type, payload) {
+    const message = { type, payload };
+    console.log(`Broadcasting message: ${type}`, payload);
+    // Send to the service worker
+    chrome.runtime.sendMessage(message).catch(err => {
+      if (err.message.includes('Could not establish connection')) {
+        // Expected if only the service worker is active
+      } else {
+        console.error(`Error sending message to service worker: ${err.message}`);
+      }
+    });
+
+    // Send to any open tabs with content scripts
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach(tab => {
+        chrome.tabs.sendMessage(tab.id, message).catch(err => {
+          if (err.message.includes('Could not establish connection')) {
+            // Expected if the content script is not injected or not listening
+          } else {
+            console.error(`Error sending message to tab ${tab.id}: ${err.message}`);
+          }
+        });
+      });
     });
   }
 }
@@ -39,5 +54,10 @@ export const communicator = new Communicator();
  * @enum {string}
  */
 export const MessageType = {
-  GET_ARTISTS: 'GET_ARTISTS',
+  // Request/response
+  GET_ARTISTS: 'GET_ARTISTS', // Kept for now, might be removed later
+
+  // Event-driven
+  REQUEST_ARTIST_FETCH: 'REQUEST_ARTIST_FETCH', // Popup -> SW
+  ARTISTS_UPDATED: 'ARTISTS_UPDATED', // SW -> Popup
 };

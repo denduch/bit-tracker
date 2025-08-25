@@ -4,8 +4,12 @@
   "version": "1.0",
   "description": "Chrome extension with popup and service worker",
   "permissions": [
-    "activeTab",
-    "storage"
+    "storage",
+    "unlimitedStorage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.bandsintown.com/*"
   ],
   "icons": {
     "16": "assets/logo-16.png",
@@ -22,5 +26,11 @@
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [ "assets/fonts/*.woff2" ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
 }

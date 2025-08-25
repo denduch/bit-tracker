@@ -1,4 +1,5 @@
 import { store } from '../store.js';
+import { communicator, MessageType } from '../../common/messaging.js';
 
 class ArtistsView extends HTMLElement {
     constructor() {
@@ -19,12 +20,18 @@ class ArtistsView extends HTMLElement {
     }
 
     render() {
-        const { artists, isLoading } = store.getState();
+        const state = store.getState();
+        console.log({state})
+        const { artists, isLoading } = state;
 
         this.shadowRoot.innerHTML = `
+            <link rel="stylesheet" href="styles/buttons.css">
             <link rel="stylesheet" href="components/artists-view.css">
             <div>
-                <h2>Artists</h2>
+                <div class="panel-header">
+                    <h2>Artists</h2>
+                    <button id="refresh-button" class="button primary refresh-artists-button" title="Refresh artist list">&#x21bb;</button>
+                </div>
                 ${isLoading ? '<p>Loading artists...</p>' : `
                     ${artists.length > 0 ? `
                         <div class="artist-list">
@@ -38,16 +45,22 @@ class ArtistsView extends HTMLElement {
                                         <div class="tracker-count">${artist.tracker_count.toLocaleString()} followers</div>
                                     </div>
                                     <div class="artist-status">
-                                        ${artist.on_tour ? '<span class="on-tour">On Tour</span>' : ''}
+                                        ${artist.on_tour ? '<span class="on-tour">ON TOUR</span>' : ''}
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
-                    ` : '<p>No artists found.</p>'}
+                    ` : '<p>No artists found. Add artists on Bandsintown.</p>'}
                 `}
             </div>
         `;
+
+        this.shadowRoot.getElementById('refresh-button').addEventListener('click', () => {
+            console.log('Refresh button clicked, sending fetch request from artists-view.');
+            store.setState({ isLoading: true });
+            communicator.broadcast(MessageType.REQUEST_ARTIST_FETCH);
+        });
     }
 }
 
-customElements.define('artists-view', ArtistsView);
+window.customElements.define('artists-view', ArtistsView);

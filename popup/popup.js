@@ -1,42 +1,58 @@
 import { communicator, MessageType } from '../common/messaging.js';
 import { store } from './store.js';
+import { storageManager } from '../common/storage.js';
 
-async function fetchArtists() {
-  try {
-    console.log('Sending GET_ARTISTS request from popup...');
-    store.setState({ isLoading: true });
-    // The service worker will decide whether to use mocks based on chrome.storage
-    const response = await communicator.get(MessageType.GET_ARTISTS);
-    console.log('Response from service worker:', response);
+const CACHE_KEY = 'tracked-artists';
 
-    if (response.status === 'success') {
-      store.setState({ artists: response.data, isLoading: false });
-    } else {
-      store.setState({ isLoading: false });
-    }
-  } catch (error) {
-    console.error('Error communicating with service worker:', error);
-    store.setState({ isLoading: false });
-  }
+/**
+ * Loads artists from local storage and updates the UI state.
+ */
+async function loadArtistsFromStorage() {
+  console.log('Loading artists from storage...');
+  store.setState({ isLoading: true });
+
+  // 1. Get data from storage
+  const storedData = await storageManager.get(CACHE_KEY, []);
+  console.log('DEBUG: Data from storageManager.get:', storedData);
+
+  store.setState({ artists: storedData.artists, isLoading: false });
+
+  // const artistsView = document.querySelector('artists-view');
+  // if (artistsView && artistsView.render) {
+  //     console.log('Forcing artists-view re-render.');
+  //     artistsView.render();
+  // }
+}
+
+/**
+ * Sets up event listeners for the popup.
+ */
+function initializeEventListeners() {
+  // Listen for updates from the service worker
+  communicator.on(MessageType.ARTISTS_UPDATED, () => {
+    console.log('Received ARTISTS_UPDATED event, reloading from storage.');
+    loadArtistsFromStorage();
+  });
 }
 
 async function initializeMockToggle() {
   const toggle = document.getElementById('mock-toggle');
 
-  // Get the initial value from storage, default to true
-  const { useMocks = true } = await chrome.storage.local.get('useMocks');
+  const useMocks = await storageManager.get('useMocks', true);
   toggle.checked = useMocks;
 
   toggle.addEventListener('change', async (event) => {
     const newUseMocks = event.target.checked;
-    await chrome.storage.local.set({ useMocks: newUseMocks });
+    await storageManager.set('useMocks', newUseMocks);
   });
 }
 
-async function main() {
-  await initializeMockToggle();
-  await fetchArtists();
+// Initial setup
+function initialize() {
+  initializeEventListeners();
+  initializeMockToggle();
+  // Load initial data from storage.
+  loadArtistsFromStorage();
 }
 
-main();
-
+initialize();

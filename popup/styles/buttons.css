@@ -1,0 +1,29 @@
+.button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    background-position: 0 0;
+    background-size: 400%;
+    background-repeat: no-repeat;
+    border: 1px solid black;
+    transition: background-position 0.4s ease-in-out;
+
+    &:hover {
+        background-position: 100% 0;
+    }
+
+    &.primary {
+        background-image: var(--gradient-accent-button);
+    }
+
+    &.secondary {
+        background-image: var(--gradient-secondary-button);
+    }
+}

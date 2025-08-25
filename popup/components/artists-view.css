@@ -1,7 +1,24 @@
-h2 {
-    font-size: 20px;
-    color: var(--color-text-primary);
-    margin: 0 0 10px 0;
+.panel-header {
+    position: relative;
+    text-align: center;
+    height: 40px;
+
+    h2 {
+        font-size: 24px;
+        color: var(--color-text-primary);
+        margin: 0 0 10px 0;
+        display: inline-block;
+        background: var(--gradient-accent);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .refresh-artists-button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: 4px 8px;
+    }
 }
 
 .artist-list {
@@ -13,7 +30,7 @@ h2 {
 .artist-tile {
     display: flex;
     align-items: center;
-    background-color: var(--color-background-secondary);
+    background: var(--color-background-secondary);
     border-radius: 8px;
     gap: 10px;
     border: 1px solid black;
@@ -37,42 +54,46 @@ h2 {
             display: block;
         }
     }
+
+    .artist-details {
+        flex: 1;
+        color: var(--color-text-primary);
+        padding-block: 8px;
+    }
+    
+    .artist-name {
+        font-weight: bold;
+        letter-spacing: 0.7px;
+    }
+    
+    .tracker-count {
+        font-size: 11px;
+        color: var(--color-text-secondary);
+        margin-top: 4px;
+    }
+
+    .artist-status {
+        flex: 0 0 70px;
+        text-align: right;
+        position: relative;
+
+        .on-tour {
+            background-color: var(--color-accent);
+            color: white;
+            padding: 8px 12px;
+            font-size: 10px;
+            font-weight: bold;
+            position: absolute;
+            right: -1px;
+            top: -1px;
+            border: 1px solid black;
+            border-bottom-left-radius: 12px;
+            background: var(--gradient-accent);
+            white-space: nowrap;
+        }
+    }
 }
 
 
-.artist-details {
-    flex: 1;
-    color: var(--color-text-primary);
-    padding-block: 8px;
-}
 
-.artist-name {
-    font-weight: bold;
-}
 
-.tracker-count {
-    font-size: 11px;
-    color: var(--color-text-secondary);
-    margin-top: 4px;
-}
-
-.artist-status {
-    flex: 0 0 70px;
-    text-align: right;
-    position: relative;
-}
-
-.on-tour {
-    background-color: var(--color-accent);
-    color: white;
-    padding: 8px 12px;
-    font-size: 10px;
-    font-weight: bold;
-    position: absolute;
-    right: -1px;
-    top: -1px;
-    border: 1px solid black;
-    border-bottom-left-radius: 12px;
-    background: var(--gradient-accent);
-    white-space: nowrap;
-}
