@@ -1,5 +1,6 @@
 import { store } from '../store.js';
 import { communicator, MessageType } from '../../common/messaging.js';
+import './tile-view.js';
 
 class ArtistsView extends HTMLElement {
     constructor() {
@@ -29,25 +30,19 @@ class ArtistsView extends HTMLElement {
             <link rel="stylesheet" href="components/artists-view.css">
             <div>
                 <div class="panel-header">
-                    <h2>Artists</h2>
+                    <h2>${artists.length} Artists</h2>
                     <button id="refresh-button" class="button primary refresh-artists-button" title="Refresh artist list">&#x21bb;</button>
                 </div>
                 ${isLoading ? '<p>Loading artists...</p>' : `
                     ${artists.length > 0 ? `
                         <div class="artist-list">
                             ${artists.map(artist => `
-                                <div class="artist-tile">
-                                    <div class="artist-image">
-                                        <img src="${artist.properlySizedArtistImageURL}" alt="${artist.name}">
-                                    </div>
-                                    <div class="artist-details">
-                                        <div class="artist-name">${artist.name}</div>
-                                        <div class="tracker-count">${artist.tracker_count.toLocaleString()} followers</div>
-                                    </div>
-                                    <div class="artist-status">
-                                        ${artist.on_tour ? '<span class="on-tour">ON TOUR</span>' : ''}
-                                    </div>
-                                </div>
+                                <tile-view 
+                                    image-src="${artist.properlySizedArtistImageURL}"
+                                    name="${artist.name}"
+                                    details="${artist.tracker_count.toLocaleString()} followers"
+                                    status-text="${artist.on_tour ? 'ON TOUR' : ''}">
+                                </tile-view>
                             `).join('')}
                         </div>
                     ` : '<p>No artists found. Add artists on Bandsintown.</p>'}
