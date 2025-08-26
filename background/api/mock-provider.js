@@ -8,7 +8,8 @@ async function getTrackedArtists() {
   }
   const data = await response.json();
   // Assuming the JSON structure is { "artists": [...] }
-  return data.artists;
+  console.log('Mock artists:', data.artists)
+  return data;
 }
 
 export const mockProvider = {
