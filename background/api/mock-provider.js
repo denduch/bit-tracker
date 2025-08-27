@@ -18,13 +18,22 @@ async function getArtstEvent(artist) {
   if (!response.ok) {
     throw new Error(`Failed to fetch mock artist page: ${response.statusText}`);
   }
-  return await response.text();
+  let allEvents = [];
+  const html = await response.text();
+  const events = parseEventsFromHTML(html);
+  if (events.length > 0) {
+    const eventsWithArtist = events.map(event => ({ ...event, artist, artist_id: artist.id }));
+    allEvents = allEvents.concat(eventsWithArtist);
+  } else {
+    console.log(`No events found on page for ${artist.name}`);
+  }
+  return allEvents;
 }
 
 async function getArtistEvents() {
   console.log('Fetching events from mock HTML file...');
-  const allEvents = [];
-  allEvents.push(await getArtstEvent({
+  let allEvents = [];
+  allEvents = allEvents.concat(await getArtstEvent({
     ViewConcertlink: "https://www.bandsintown.com/a/432?came_from=0&utm_medium=web&utm_source=artist_explorer_page&utm_campaign=artist",
     artistPageUrl: "https://www.bandsintown.com/a/432?came_from=0&utm_medium=web&utm_source=settings_my_artist&utm_campaign=artist",
     id: 432,

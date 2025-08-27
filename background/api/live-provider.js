@@ -22,6 +22,7 @@ async function getArtstEvent(artist) {
     console.error(`Failed to fetch page for ${artist.name}: ${response.statusText}`);
     return;
   }
+  let allEvents = [];
   const html = await response.text();
   const events = parseEventsFromHTML(html);
   if (events.length > 0) {
@@ -30,6 +31,7 @@ async function getArtstEvent(artist) {
   } else {
     console.log(`No events found on page for ${artist.name}`);
   }
+  return allEvents;
 }
 
 async function getArtistEvents() {
@@ -39,7 +41,7 @@ async function getArtistEvents() {
 
   for (const artist of artists) {
     try {
-      allEvents.push(await getArtstEvent(artist));
+      allEvents = allEvents.concat(await getArtstEvent(artist));
     } catch (error) {
       console.error(`Error processing artist ${artist.name}:`, error);
       continue;
