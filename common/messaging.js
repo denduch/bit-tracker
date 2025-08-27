@@ -8,6 +8,7 @@ class Communicator {
   on(type, handler) {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       console.log("ON MESSAGE:", message);
+      console.log("ON TYPE:", message.type, type);
       if (message.type === type) {
         // This listener is for events, so we don't send a response.
         handler(message.payload, sender);
@@ -60,4 +61,6 @@ export const MessageType = {
   // Event-driven
   REQUEST_ARTIST_FETCH: 'REQUEST_ARTIST_FETCH', // Popup -> SW
   ARTISTS_UPDATED: 'ARTISTS_UPDATED', // SW -> Popup
+  REQUEST_EVENTS_FETCH: 'REQUEST_EVENTS_FETCH', // Popup -> SW
+  EVENTS_UPDATED: 'EVENTS_UPDATED', // SW -> Popup
 };

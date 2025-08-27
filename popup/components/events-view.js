@@ -11,7 +11,6 @@ class EventsView extends HTMLElement {
 
     connectedCallback() {
         store.subscribe(this.handleStoreUpdate);
-        this.render(); // Initial render
     }
 
     disconnectedCallback() {
@@ -21,6 +20,8 @@ class EventsView extends HTMLElement {
     render() {
         const state = store.getState();
         const { events = [], isLoading } = state; // Default events to empty array
+
+        console.log('events: ', {events})
 
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="styles/buttons.css">
@@ -37,8 +38,8 @@ class EventsView extends HTMLElement {
                                 <tile-view 
                                     image-src="${event.artist.image_url}"
                                     name="${event.artist.name}"
-                                    details="${new Date(event.datetime).toLocaleString()} @ ${event.venue.name}, ${event.venue.city}"
-                                    status-text="${event.offers[0]?.status.toUpperCase() || ''}">
+                                    details="${new Date(event.starts_at).toLocaleDateString()} @ ${event.venue.name}, ${event.venue.city}"
+                                    status-text="${event.offers[0]?.status.toUpperCase() || 'NOT AVAILABLE'}">
                                 </tile-view>
                             `).join('')}
                         </div>

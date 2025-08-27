@@ -9,11 +9,13 @@ async function getProvider() {
   return useMocks ? mockProvider : liveProvider;
 }
 
-// This is the facade that the rest of the application will use.
 export const apiProvider = {
   async getTrackedArtists() {
     const provider = await getProvider();
     return provider.getTrackedArtists();
   },
-  // Add other methods like getArtistDetails in the future
+  async getArtistEvents() {
+    const provider = await getProvider();
+    return provider.getArtistEvents();
+  },
 };

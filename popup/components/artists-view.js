@@ -13,7 +13,6 @@ class ArtistsView extends HTMLElement {
 
     connectedCallback() {
         store.subscribe(this.handleStoreUpdate);
-        this.render(); // Initial render
     }
 
     disconnectedCallback() {
@@ -22,15 +21,15 @@ class ArtistsView extends HTMLElement {
 
     render() {
         const state = store.getState();
-        console.log({state})
-        const { artists, isLoading } = state;
+        console.log('STATE: ', {state})
+        const { artists = [], isLoading } = state;
 
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="styles/buttons.css">
             <link rel="stylesheet" href="components/artists-view.css">
             <div>
                 <div class="panel-header">
-                    <h2>${artists.length} Artists</h2>
+                    <h2>${artists.length || 0} Artists</h2>
                     <button id="refresh-button" class="button primary refresh-artists-button" title="Refresh artist list">&#x21bb;</button>
                 </div>
                 ${isLoading ? '<p>Loading artists...</p>' : `

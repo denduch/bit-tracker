@@ -1,3 +1,6 @@
+import { communicator, MessageType } from '../common/messaging.js';
+import { storageManager } from '../common/storage.js';
+
 class Store {
   constructor(initialState = {}) {
     this.state = initialState;
@@ -22,7 +25,41 @@ class Store {
   }
 }
 
-export const store = new Store({
+const initialState = {
   artists: [],
+  events: [],
   isLoading: true,
+};
+
+export const store = new Store(initialState);
+
+async function loadInitialData() {
+  store.setState({ isLoading: true });
+  try {
+    const data = await Promise.all([
+      storageManager.get('tracked-artists'),
+      storageManager.get('tracked-events')
+    ]);
+    const [artists, events] = data;
+    store.setState({ artists: artists || [], events: events || [], isLoading: false });
+  } catch (error) {
+    console.error('Failed to load initial data:', error);
+    store.setState({ isLoading: false }); // Ensure loading state is always turned off
+  }
+}
+
+// Listen for updates from the service worker
+communicator.on(MessageType.ARTISTS_UPDATED, async () => {
+  console.log('Store received ARTISTS_UPDATED');
+  const artists = await storageManager.get('tracked-artists') || [];
+  store.setState({ artists, isLoading: false });
 });
+
+communicator.on(MessageType.EVENTS_UPDATED, async () => {
+  console.log('Store received EVENTS_UPDATED');
+  const events = await storageManager.get('tracked-events') || [];
+  store.setState({ events, isLoading: false });
+});
+
+// Initial data load when the popup opens
+loadInitialData();
