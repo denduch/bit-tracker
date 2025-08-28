@@ -1,12 +1,15 @@
+import { storageManager } from '../../common/storage.js';
+
 class TabView extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
     }
 
-    connectedCallback() {
-        this.switchTab('artists');
+    async connectedCallback() {
         this.render();
+        const lastTab = await storageManager.get('lastActiveTab', 'artists');
+        this.switchTab(lastTab);
         this.addEventListeners();
     }
 
@@ -40,6 +43,8 @@ class TabView extends HTMLElement {
         this.querySelectorAll('.panel').forEach(panel => {
             panel.style.display = panel.slot === tabName ? 'block' : 'none';
         });
+
+        storageManager.set('lastActiveTab', tabName);
     }
 }
 

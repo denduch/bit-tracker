@@ -66,6 +66,44 @@ class StorageManager {
       console.error(`Error setting item '${key}' in storage:`, error);
     }
   }
+
+  /**
+   * Retrieves all items from storage.
+   * @returns {Promise<Object>}
+   */
+  async getAll() {
+    try {
+      return await this.storage.get(null);
+    } catch (error) {
+      console.error('Error getting all items from storage:', error);
+      return {};
+    }
+  }
+
+  /**
+   * Saves multiple items to storage.
+   * @param {Object} items An object with key-value pairs to store.
+   * @returns {Promise<void>}
+   */
+  async setAll(items) {
+    try {
+      await this.storage.set(items);
+    } catch (error) {
+      console.error('Error setting all items in storage:', error);
+    }
+  }
+
+  /**
+   * Clears all items from storage.
+   * @returns {Promise<void>}
+   */
+  async clear() {
+    try {
+      await this.storage.clear();
+    } catch (error) {
+      console.error('Error clearing storage:', error);
+    }
+  }
 }
 
 export const storageManager = new StorageManager();

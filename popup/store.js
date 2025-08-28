@@ -29,6 +29,7 @@ const initialState = {
   artists: [],
   events: [],
   isLoading: true,
+  eventsLoadingProgress: { current: 0, total: 0 },
 };
 
 export const store = new Store(initialState);
@@ -58,7 +59,12 @@ communicator.on(MessageType.ARTISTS_UPDATED, async () => {
 communicator.on(MessageType.EVENTS_UPDATED, async () => {
   console.log('Store received EVENTS_UPDATED');
   const events = await storageManager.get('tracked-events') || [];
-  store.setState({ events, isLoading: false });
+  store.setState({ events, isLoading: false, eventsLoadingProgress: { current: 0, total: 0 } });
+});
+
+communicator.on(MessageType.EVENTS_LOADING_PROGRESS, (progress) => {
+  console.log('Store received EVENTS_LOADING_PROGRESS', progress);
+  store.setState({ eventsLoadingProgress: progress });
 });
 
 // Initial data load when the popup opens

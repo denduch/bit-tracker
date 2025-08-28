@@ -37,7 +37,10 @@ class TileView extends HTMLElement {
                 <div class="status">
                     ${date ? `
                         <div class="date-display">
-                            <div class="month">${this.getRomanMonth(date.getMonth())}</div>
+                            <div>
+                                <span class="day">${date.getDate()}</span>
+                                <span class="month">${this.getRomanMonth(date.getMonth())}</span>
+                            </div>
                             <div class="year">${date.getFullYear()}</div>
                         </div>
                     ` : ''}

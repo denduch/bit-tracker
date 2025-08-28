@@ -8,7 +8,10 @@
 </head>
 <body>
     <div class="header-controls">
-        <label class="toggle-switch">
+        <button id="export-button" class="button primary" title="Export data">Export</button>
+        <button id="import-button" class="button secondary" title="Import data">Import</button>
+        <input type="file" id="import-file-input" style="display: none;" accept=".json">
+        <label class="toggle-switch" title="Toggle mock data">
             <input type="checkbox" id="mock-toggle">
             <span class="slider"></span>
         </label>

@@ -20,7 +20,8 @@ class EventsView extends HTMLElement {
 
     render() {
         const state = store.getState();
-        const { events = [], isLoading } = state; // Default events to empty array
+        const { events = [], isLoading, eventsLoadingProgress } = state;
+        const sortedEvents = [...events].sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt)); // Default events to empty array
 
         console.log('events: ', {events})
 
@@ -29,13 +30,16 @@ class EventsView extends HTMLElement {
             <link rel="stylesheet" href="components/events-view.css">
             <div>
                 <div class="panel-header">
-                    <h2>${events.length} Events</h2>
-                    <button id="refresh-button" class="button primary refresh-events-button" title="Refresh event list">&#x21bb;</button>
+                    <h2>${sortedEvents.length} Events</h2>
+                                        ${isLoading && eventsLoadingProgress.total > 0
+                        ? `<div class="loading-progress">${eventsLoadingProgress.current}/${eventsLoadingProgress.total}</div>`
+                        : `<button id="refresh-button" class="button primary refresh-events-button" title="Refresh event list">&#x21bb;</button>`
+                    }
                 </div>
                 ${isLoading ? '<p>Loading events...</p>' : `
-                    ${events.length > 0 ? `
+                    ${sortedEvents.length > 0 ? `
                         <div class="events-list">
-                            ${events.map(event => {
+                            ${sortedEvents.map(event => {
                                 const { country, flag } = getCountryAndFlag(event.location);
                                 const details = `${country}, ${event.location} ${flag}`;
                                 return `
@@ -52,10 +56,13 @@ class EventsView extends HTMLElement {
             </div>
         `;
 
-        this.shadowRoot.getElementById('refresh-button').addEventListener('click', () => {
-            store.setState({ isLoading: true });
-            communicator.broadcast(MessageType.REQUEST_EVENTS_FETCH);
-        });
+                const refreshButton = this.shadowRoot.getElementById('refresh-button');
+        if (refreshButton) {
+            refreshButton.addEventListener('click', () => {
+                store.setState({ isLoading: true, eventsLoadingProgress: { current: 0, total: 0 } });
+                communicator.broadcast(MessageType.REQUEST_EVENTS_FETCH);
+            });
+        }
     }
 }
 

@@ -20,6 +20,21 @@
         top: 0;
         padding: 4px 8px;
     }
+
+    .loading-progress {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+        color: var(--color-text-secondary);
+        min-width: 50px;
+        padding: 4px 8px;
+    }
 }
 
 .events-list {

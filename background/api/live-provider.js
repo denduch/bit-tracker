@@ -1,4 +1,5 @@
 import { parseEventsFromHTML } from './parser.js';
+import { communicator, MessageType } from '../../common/messaging.js';
 const BANDSINTOWN_ARTISTS_URL = 'https://www.bandsintown.com/u/trackedArtists?max=10000';
 
 async function getTrackedArtists() {
@@ -39,10 +40,10 @@ async function getArtistEvents() {
   console.log('Fetching events from Bandsintown...');
   const artists = await getTrackedArtists();
   let allEvents = [];
-  const BATCH_SIZE = 1;
-  const DELAY_MS = 1000;
+  const BATCH_SIZE = 2;
+  const DELAY_MS = 200;
 
-  for (let i = 0; i < artists.length * 0 + 2; i += BATCH_SIZE) {
+  for (let i = 0; i < artists.length; i += BATCH_SIZE) {
     const batch = artists.slice(i, i + BATCH_SIZE);
     console.log(`Processing batch starting with artist ${i + 1}/${artists.length}...`);
 
@@ -54,8 +55,13 @@ async function getArtistEvents() {
     );
 
     const results = await Promise.all(batchPromises);
-    const successfulEvents = results.flat().filter(Boolean); // Flatten results and remove empty/falsy values
+    const successfulEvents = results.flat().filter(Boolean);
     allEvents = allEvents.concat(successfulEvents);
+
+    communicator.broadcast(MessageType.EVENTS_LOADING_PROGRESS, { 
+      current: Math.min(i + BATCH_SIZE, artists.length),
+      total: artists.length 
+    });
 
     if (i + BATCH_SIZE < artists.length) {
       console.log(`Waiting for ${DELAY_MS}ms before the next batch...`);
