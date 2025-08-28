@@ -12,7 +12,17 @@ class Store {
   }
 
   setState(newState) {
+    const oldState = { ...this.state };
     this.state = { ...this.state, ...newState };
+
+    if (newState.activeEventFilter !== undefined && newState.activeEventFilter !== oldState.activeEventFilter) {
+      storageManager.set('activeEventFilter', newState.activeEventFilter);
+    }
+
+    if (newState.collapsedEventFilterGroups !== undefined) {
+        storageManager.set('collapsedEventFilterGroups', newState.collapsedEventFilterGroups);
+    }
+
     this.listeners.forEach(listener => listener(this.state));
   }
 
@@ -30,6 +40,8 @@ const initialState = {
   events: [],
   isLoading: true,
   eventsLoadingProgress: { current: 0, total: 0 },
+  activeEventFilter: 'everywhere',
+  collapsedEventFilterGroups: [],
 };
 
 export const store = new Store(initialState);
@@ -37,12 +49,20 @@ export const store = new Store(initialState);
 async function loadInitialData() {
   store.setState({ isLoading: true });
   try {
-    const data = await Promise.all([
-      storageManager.get('tracked-artists'),
-      storageManager.get('tracked-events')
+    const [artists, events, activeEventFilter, collapsedEventFilterGroups] = await Promise.all([
+      storageManager.get('tracked-artists', []),
+      storageManager.get('tracked-events', []),
+      storageManager.get('activeEventFilter', 'everywhere'),
+      storageManager.get('collapsedEventFilterGroups', [])
     ]);
-    const [artists, events] = data;
-    store.setState({ artists: artists || [], events: events || [], isLoading: false });
+
+    store.setState({
+      artists,
+      events,
+      activeEventFilter,
+      collapsedEventFilterGroups,
+      isLoading: false
+    });
   } catch (error) {
     console.error('Failed to load initial data:', error);
     store.setState({ isLoading: false }); // Ensure loading state is always turned off

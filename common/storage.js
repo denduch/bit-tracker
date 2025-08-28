@@ -35,10 +35,9 @@ class StorageManager {
           await this.storage.remove(key); // Clean up stale cache
           return defaultValue;
         }
-        return storedItem.value; // Return the actual value if not stale
       }
 
-      return storedItem.value !== undefined ? storedItem.value : storedItem; // Handle both cached and non-cached items
+      return storedItem.value !== undefined ? storedItem.value : storedItem;
     } catch (error) {
       console.error(`Error getting item '${key}' from storage:`, error);
       return defaultValue;
