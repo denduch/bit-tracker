@@ -1,4 +1,5 @@
 import { store } from '../store.js';
+import { getCountryAndFlag } from '../../common/location-helper.js';
 import { communicator, MessageType } from '../../common/messaging.js';
 import './tile-view.js';
 
@@ -34,14 +35,17 @@ class EventsView extends HTMLElement {
                 ${isLoading ? '<p>Loading events...</p>' : `
                     ${events.length > 0 ? `
                         <div class="events-list">
-                            ${events.map(event => `
+                            ${events.map(event => {
+                                const { country, flag } = getCountryAndFlag(event.location);
+                                const details = `${country}, ${event.location} ${flag}`;
+                                return `
                                 <tile-view 
                                     image-src="${event.artist.properlySizedArtistImageURL}"
                                     name="${event.artist.name}"
-                                    details="${event.location}"
+                                    details="${details}"
                                     date="${event.startsAt}">
                                 </tile-view>
-                            `).join('')}
+                            `}).join('')}
                         </div>
                     ` : '<p>No upcoming events found.</p>'}
                 `}

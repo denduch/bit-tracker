@@ -37,7 +37,7 @@ class TileView extends HTMLElement {
                 <div class="status">
                     ${date ? `
                         <div class="date-display">
-                            <div class="month">${this.toRoman(date.getMonth() + 1)}</div>
+                            <div class="month">${this.getRomanMonth(date.getMonth())}</div>
                             <div class="year">${date.getFullYear()}</div>
                         </div>
                     ` : ''}
@@ -47,17 +47,9 @@ class TileView extends HTMLElement {
         `;
     }
 
-    toRoman(num) {
-        const roman = { M: 1000, CM: 900, D: 500, CD: 400, C: 100, XC: 90, L: 50, XL: 40, X: 10, IX: 9, V: 5, IV: 4, I: 1 };
-        let str = '';
-
-        for (let i of Object.keys(roman)) {
-            let q = Math.floor(num / roman[i]);
-            num -= q * roman[i];
-            str += i.repeat(q);
-        }
-
-        return str;
+    getRomanMonth(monthIndex) {
+        const romanMonths = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        return romanMonths[monthIndex];
     }
 }
 window.customElements.define('tile-view', TileView);
