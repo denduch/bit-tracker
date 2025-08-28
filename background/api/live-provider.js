@@ -11,13 +11,14 @@ async function getTrackedArtists() {
   if (!response.ok) {
     throw new Error(`Failed to fetch tracked artists: ${response.statusText}`);
   }
-  const artists = await response.json();
+  const { artists } = await response.json();
   return artists;
 }
 
 async function getArtstEvent(artist) {
-  console.log(`Fetching events for ${artist.name} from ${artist.url}`);
-  const response = await fetch(artist.url);
+  console.log(`Fetching events for ${artist.name} from ${artist.artistPageUrl}`, artist);
+  
+  const response = await fetch(artist.artistPageUrl);
   if (!response.ok) {
     console.error(`Failed to fetch page for ${artist.name}: ${response.statusText}`);
     return;
@@ -38,15 +39,31 @@ async function getArtistEvents() {
   console.log('Fetching events from Bandsintown...');
   const artists = await getTrackedArtists();
   let allEvents = [];
+  const BATCH_SIZE = 1;
+  const DELAY_MS = 1000;
 
-  for (const artist of artists) {
-    try {
-      allEvents = allEvents.concat(await getArtstEvent(artist));
-    } catch (error) {
-      console.error(`Error processing artist ${artist.name}:`, error);
-      continue;
+  for (let i = 0; i < artists.length * 0 + 2; i += BATCH_SIZE) {
+    const batch = artists.slice(i, i + BATCH_SIZE);
+    console.log(`Processing batch starting with artist ${i + 1}/${artists.length}...`);
+
+    const batchPromises = batch.map(artist => 
+      getArtstEvent(artist).catch(error => {
+        console.error(`Error processing artist ${artist.name}:`, error);
+        return []; // Return an empty array on error to avoid breaking Promise.all
+      })
+    );
+
+    const results = await Promise.all(batchPromises);
+    const successfulEvents = results.flat().filter(Boolean); // Flatten results and remove empty/falsy values
+    allEvents = allEvents.concat(successfulEvents);
+
+    if (i + BATCH_SIZE < artists.length) {
+      console.log(`Waiting for ${DELAY_MS}ms before the next batch...`);
+      await new Promise(resolve => setTimeout(resolve, DELAY_MS));
     }
   }
+
+  console.log('Finished fetching all artist events.');
   return allEvents;
 }
 
