@@ -36,10 +36,10 @@ class EventsView extends HTMLElement {
                         <div class="events-list">
                             ${events.map(event => `
                                 <tile-view 
-                                    image-src="${event.artist.image_url}"
+                                    image-src="${event.artist.properlySizedArtistImageURL}"
                                     name="${event.artist.name}"
-                                    details="${new Date(event.starts_at).toLocaleDateString()} @ ${event.venue.name}, ${event.venue.city}"
-                                    status-text="${event.offers[0]?.status.toUpperCase() || 'NOT AVAILABLE'}">
+                                    details="${event.location}"
+                                    date="${event.startsAt}">
                                 </tile-view>
                             `).join('')}
                         </div>

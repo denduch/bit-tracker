@@ -45,22 +45,38 @@
 
     .status {
         flex: 0 0 70px;
-        text-align: right;
         position: relative;
+    }
 
-        .on-tour {
-            background-color: var(--color-accent);
-            color: white;
-            padding: 8px 12px;
+    .date-display, .status-badge {
+        background-color: var(--color-accent);
+        color: white;
+        padding: 8px 12px;
+        font-size: 10px;
+        font-weight: bold;
+        position: absolute;
+        right: -1px;
+        top: -1px;
+        border: 1px solid black;
+        border-bottom-left-radius: 12px;
+        background: var(--gradient-accent);
+        white-space: nowrap;
+    }
+
+    .date-display {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        line-height: 1.2;
+
+        .month {
+            font-size: 14px;
+        }
+
+        .year {
             font-size: 10px;
-            font-weight: bold;
-            position: absolute;
-            right: -1px;
-            top: -1px;
-            border: 1px solid black;
-            border-bottom-left-radius: 12px;
-            background: var(--gradient-accent);
-            white-space: nowrap;
+            opacity: 0.8;
         }
     }
+
 }
