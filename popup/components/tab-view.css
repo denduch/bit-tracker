@@ -21,7 +21,6 @@
             font-size: 16px;
             color: var(--color-text-secondary);
             border-bottom: 2px solid transparent;
-            transition: color 0.3s ease;
         }
 
         &:hover {

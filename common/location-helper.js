@@ -82,26 +82,35 @@ function normalizeCountry(location) {
 function getCountryFilterGroups(events) {
     const uniqueCountries = [...new Set(events.map(event => normalizeCountry(event.location)).filter(Boolean))].sort();
 
-    const groups = [
-        { label: 'General', options: [{ label: 'Everywhere', value: 'everywhere' }, { label: 'Europe', value: 'europe' }] },
+    const generalOptions = [
+        { label: 'Everywhere', value: 'everywhere', group: 'general' },
+        { label: 'Europe', value: 'europe', group: 'general' },
     ];
 
-    const poland = uniqueCountries.find(c => c === 'Poland');
-    if (poland) {
-        groups.push({ label: 'Featured', options: [{ label: 'Poland', value: 'Poland' }] });
-    }
+    const polandOption = uniqueCountries.includes('Poland') 
+        ? [{ label: 'Poland', value: 'Poland', group: 'poland' }]
+        : [];
 
-    const otherEuropean = uniqueCountries.filter(c => c !== 'Poland' && europeanCountries.includes(c));
-    if (otherEuropean.length > 0) {
-        groups.push({ label: 'Europe', options: otherEuropean.map(c => ({ label: c, value: c })) });
-    }
+    const europeanOptions = uniqueCountries
+        .filter(c => c !== 'Poland' && europeanCountries.includes(c))
+        .map(c => ({
+            label: c,
+            value: c,
+            group: 'europe',
+        }));
 
-    const restOfTheWorld = uniqueCountries.filter(c => !europeanCountries.includes(c) && c !== 'Poland');
-    if (restOfTheWorld.length > 0) {
-        groups.push({ label: 'Rest of the World', options: restOfTheWorld.map(c => ({ label: c, value: c })) });
-    }
+    const restOfTheWorldOptions = uniqueCountries
+        .filter(c => !europeanCountries.includes(c))
+        .map(c => ({ 
+            label: c, 
+            value: c, 
+            group: 'world' 
+        }));
 
-    return groups;
+    return [{
+        label: 'Filter by country',
+        options: [...generalOptions, ...polandOption, ...europeanOptions, ...restOfTheWorldOptions]
+    }];
 }
 
 export { getCountryAndFlag, getCountryFilterGroups, europeanCountries, usStates, normalizeCountry };

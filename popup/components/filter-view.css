@@ -36,7 +36,6 @@
     display: inline-block;
     padding: 3px;
     transform: rotate(45deg);
-    transition: transform 0.2s;
 }
 
 .filter-group.collapsed .group-label::after {
@@ -44,32 +43,81 @@
 }
 
 .filter-group.collapsed .options-wrapper {
-    display: none;
+    height: 40px;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 30px;
+        background: linear-gradient(to bottom, transparent, var(--color-background-main));
+        pointer-events: none;
+    }
 }
 
 .options-wrapper {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    overflow: hidden;
+    position: relative;
 }
 
 .filter-option {
     padding: 4px 10px;
     border-radius: 12px;
     background-color: var(--color-background-secondary);
-    color: var(--color-text-primary);
     font-size: 12px;
     cursor: pointer;
-    border: 1px solid var(--color-border);
-    transition: all 0.2s ease-out;
+    border: 1px solid;
 }
 
 .filter-option:hover {
     border-color: var(--color-accent);
 }
 
-.filter-option.active {
-    background: var(--gradient-accent);
-    color: white;
-    border-color: black;
+.filter-option[data-group="general"] {
+    border-color: var(--filter-color-general);
+    color: var(--filter-color-general);
+}
+
+.filter-option[data-group="general"].active {
+    background-color: var(--filter-bg-general-active);
+    color: var(--filter-color-general-active);
+    border-color: var(--filter-bg-general-active);
+}
+
+.filter-option[data-group="europe"] {
+    border-color: var(--filter-color-europe);
+    color: var(--filter-color-europe);
+}
+
+.filter-option[data-group="europe"].active {
+    background-color: var(--filter-bg-europe-active);
+    color: var(--filter-color-europe-active);
+    border-color: var(--filter-bg-europe-active);
+}
+
+.filter-option[data-group="world"] {
+    border-color: var(--filter-color-world);
+    color: var(--filter-color-world);
+}
+
+.filter-option[data-group="world"].active {
+    background-color: var(--filter-bg-world-active);
+    color: var(--filter-color-world-active);
+    border-color: var(--filter-bg-world-active);
+}
+
+.filter-option[data-group="poland"] {
+    border-color: var(--filter-color-poland);
+    color: var(--filter-color-poland);
+}
+
+.filter-option[data-group="poland"].active {
+    background-color: var(--filter-bg-poland-active);
+    color: var(--filter-color-poland-active);
+    border-color: var(--filter-bg-poland-active);
 }

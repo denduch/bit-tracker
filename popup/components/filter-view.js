@@ -76,7 +76,7 @@ class FilterView extends HTMLElement {
                         ${group.label ? `<div class="group-label">${group.label}</div>` : ''}
                         <div class="options-wrapper">
                             ${group.options.map(option => `
-                                <div class="filter-option" data-value="${option.value}">
+                                <div class="filter-option" data-value="${option.value}" data-group="${option.group}">
                                     ${option.label}
                                 </div>
                             `).join('')}

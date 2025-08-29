@@ -8,6 +8,22 @@
     --gradient-accent-button: linear-gradient(to right, #ff8c00, #ff4500, #ff4500, #ff8c00, #ff8c00, #ff4500, #ff4500, #ff8c00);
     --gradient-secondary: linear-gradient(to right, #4c515a, #3a3f47);
     --gradient-secondary-button: linear-gradient(to right, #4c515a, #3a3f47, #3a3f47, #4c515a, #4c515a, #3a3f47, #3a3f47, #4c515a);
+
+    --filter-color-general: #aaa;
+    --filter-color-general-active: #fff;
+    --filter-bg-general-active: #777;
+
+    --filter-color-europe: #6caddf;
+    --filter-color-europe-active: #fff;
+    --filter-bg-europe-active: #4a90e2;
+
+    --filter-color-world: #8fde5d;
+    --filter-color-world-active: #fff;
+    --filter-bg-world-active: #64c322;
+
+    --filter-color-poland: #ffc107;
+    --filter-color-poland-active: #fff;
+    --filter-bg-poland-active: #e69500;
 }
 body {
     font-family: Roboto, Arial, sans-serif;
