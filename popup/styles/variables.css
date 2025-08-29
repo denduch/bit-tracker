@@ -33,6 +33,10 @@
     --filter-color-poland-active: #fff;
     --filter-bg-poland-active: linear-gradient(to right, #dee200, #f5dd00);
 
+    --filter-color-artist: var(--color-accent);
+    --filter-color-artist-active: #fff;
+    --filter-bg-artist-active: var(--gradient-accent);
+
     --filter-color-date: var(--color-accent);
     --filter-color-date-active: #fff;
     --filter-bg-date-active: var(--gradient-accent);

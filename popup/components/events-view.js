@@ -1,5 +1,5 @@
 import { store } from '../store.js';
-import { getCountryAndFlag, getCountryFilterGroups, europeanCountries, normalizeCountry, getDateFilterGroups } from '../../common/location-helper.js';
+import { getCountryAndFlag, getCountryFilterGroups, europeanCountries, normalizeCountry, getDateFilterGroups, getArtistFilterGroups } from '../../common/location-helper.js';
 import { communicator, MessageType } from '../../common/messaging.js';
 import './tile-view.js';
 import './filter-view.js';
@@ -9,10 +9,10 @@ class EventsView extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this.handleStoreUpdate = this.render.bind(this);
-        this.lastRenderedEventCount = 0;
     }
 
     connectedCallback() {
+        this.render(store.getState());
         store.subscribe(this.handleStoreUpdate);
     }
 
@@ -20,32 +20,32 @@ class EventsView extends HTMLElement {
         store.unsubscribe(this.handleStoreUpdate);
     }
 
-    render() {
-        const state = store.getState();
-        const { events = [], isLoading } = state;
+    render(state) {
+        const { events, activeFilters, isLoading, eventsLoadingProgress, collapsedEventFilterGroups } = state;
 
-        // Decide whether to do a full re-render or just update filters
-        if (isLoading || events.length !== this.lastRenderedEventCount) {
-            this.initialRender(state);
-            this.lastRenderedEventCount = events.length;
-        } else {
-            this.applyFilters(state);
-        }
-    }
-
-    initialRender(state) {
-        const { events = [], isLoading, eventsLoadingProgress, activeFilters, collapsedEventFilterGroups } = state;
         const sortedEvents = [...events].sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt));
-        const countryFilterGroups = getCountryFilterGroups(events);
-        const dateFilterGroups = getDateFilterGroups();
-        const filterGroups = [...countryFilterGroups, ...dateFilterGroups];
+        
+        // Filter by country and date for events display
+        const eventsFilteredByCountryAndDate = sortedEvents.filter(event => {
+            const { country } = getCountryAndFlag(event.location);
+            const countryMatch = this.isEventFilteredByCountry(normalizeCountry(country), activeFilters.country);
+            const dateMatch = !this.isEventFilteredByDate(event, activeFilters.date);
+            return countryMatch && dateMatch;
+        });
 
+        // Apply artist filter on top of country/date filtering
+        const filteredEvents = activeFilters.artist === 'all'
+            ? eventsFilteredByCountryAndDate
+            : eventsFilteredByCountryAndDate.filter(event => event.artist.name === activeFilters.artist);
+
+        const countryFilterGroups = getCountryFilterGroups(sortedEvents);
+        const dateFilterGroups = getDateFilterGroups();
+        // Artist filter options should only depend on country and date filters, not artist selection
+        const artistFilterGroups = getArtistFilterGroups(eventsFilteredByCountryAndDate);
 
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="styles/buttons.css">
             <link rel="stylesheet" href="components/events-view.css">
-            <style>
-                            </style>
             <div class="container">
                 <div class="panel-header"></div>
                 <div class="content">
@@ -53,12 +53,13 @@ class EventsView extends HTMLElement {
                         <filter-view></filter-view>
                         <div class="events-list-container">
                             <div class="events-list">
-                                ${sortedEvents.length > 0 ? sortedEvents.map(event => {
+                                ${filteredEvents.length > 0 ? filteredEvents.map(event => {
                                     const { country, flag } = getCountryAndFlag(event.location);
                                     const details = `${country}, ${event.location} ${flag}`;
                                     return `
                                     <tile-view class="event-tile"
-                                        data-country="${normalizeCountry(event.location)}"
+                                        data-country="${normalizeCountry(country)}"
+                                        data-name="${event.artist.name}"
                                         image-src="${event.artist.properlySizedArtistImageURL}"
                                         name="${event.artist.name}"
                                         details="${details}"
@@ -72,45 +73,17 @@ class EventsView extends HTMLElement {
             </div>
         `;
 
-        this.updateHeader(state);
-        this.updateFilterView(state);
+        this.updateHeader(filteredEvents.length, isLoading, eventsLoadingProgress);
+        this.updateFilterView([...countryFilterGroups, ...dateFilterGroups, ...artistFilterGroups], activeFilters, collapsedEventFilterGroups);
         this.attachEventListeners();
-        this.applyFilters(state);
     }
 
-    applyFilters(state) {
-        const { activeFilters, collapsedEventFilterGroups } = state;
-        const container = this.shadowRoot.querySelector('.events-list-container');
-        if (!container) return;
-
-        
-        this.shadowRoot.querySelectorAll('.event-tile').forEach(tile => {
-            const country = tile.dataset.country;
-            const eventDate = new Date(tile.getAttribute('date'));
-
-            const countryMatch = this.isEventFilteredByCountry(country, activeFilters.country);
-            const dateMatch = !this.isEventFilteredByDate({ startsAt: eventDate }, activeFilters.date);
-
-            tile.style.display = (countryMatch && dateMatch) ? 'flex' : 'none';
-        });
-        const filterView = this.shadowRoot.querySelector('filter-view');
-        if (filterView) {
-            filterView.activeFilters = activeFilters;
-            filterView.collapsedGroups = collapsedEventFilterGroups;
-        }
-        this.updateHeader(state);
-    }
-
-    updateHeader(state) {
-        const { isLoading, eventsLoadingProgress } = state;
+    updateHeader(visibleEventsCount, isLoading, eventsLoadingProgress) {
         const header = this.shadowRoot.querySelector('.panel-header');
         if (!header) return;
 
-        const container = this.shadowRoot.querySelector('.events-list-container');
-        const visibleEvents = container ? Array.from(container.querySelectorAll('.event-tile')).filter(tile => tile.offsetParent !== null).length : 0;
-
         header.innerHTML = `
-            <h2>${visibleEvents} Events</h2>
+            <h2>${visibleEventsCount} Events</h2>
             ${(isLoading && eventsLoadingProgress.total > 0)
                 ? `<div class="loading-progress">${eventsLoadingProgress.current}/${eventsLoadingProgress.total}</div>`
                 : `<button id="refresh-button" class="button primary refresh-events-button ${isLoading ? 'loading' : ''}" title="Refresh event list">&#x21bb;</button>`
@@ -118,67 +91,64 @@ class EventsView extends HTMLElement {
         `;
     }
 
-    updateFilterView(state) {
-        const { events, activeFilters, collapsedEventFilterGroups } = state;
+    updateFilterView(filterGroups, activeFilters, collapsedGroups) {
         const filterView = this.shadowRoot.querySelector('filter-view');
         if (filterView) {
-            const countryFilterGroups = getCountryFilterGroups(events);
-            const dateFilterGroups = getDateFilterGroups();
-            filterView.config = [...countryFilterGroups, ...dateFilterGroups];
+            filterView.config = filterGroups;
             filterView.activeFilters = activeFilters;
-            filterView.collapsedGroups = collapsedEventFilterGroups;
+            filterView.collapsedGroups = collapsedGroups;
         }
     }
 
     isEventFilteredByCountry(country, filter) {
-        if (filter === 'everywhere' || !filter) {
-            return true;
-        }
-        if (filter === 'europe') {
-            return europeanCountries.includes(country);
-        }
+        if (filter === 'everywhere' || !filter) return true;
+        if (filter === 'europe') return europeanCountries.includes(country);
         return country === filter;
     }
 
     isEventFilteredByDate(event, filter) {
-        if (filter === 'anytime' || !filter) {
-            return false;
-        }
-
-        if (!['today', 'tomorrow', 'week', 'month', '3months', '6months'].includes(filter)) {
-            return false; // Not a date filter, so don't hide
-        }
+        if (filter === 'anytime' || !filter) return false;
 
         const now = new Date();
         const eventDate = new Date(event.startsAt);
         now.setHours(0, 0, 0, 0);
 
         switch (filter) {
-            case 'today':
-                return eventDate.toDateString() !== now.toDateString();
+            case 'today': return eventDate.toDateString() !== now.toDateString();
             case 'tomorrow':
-                const tomorrow = new Date(now);
-                tomorrow.setDate(now.getDate() + 1);
+                const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
                 return eventDate.toDateString() !== tomorrow.toDateString();
             case 'week':
-                const nextWeek = new Date(now);
-                nextWeek.setDate(now.getDate() + 7);
+                const nextWeek = new Date(now); nextWeek.setDate(now.getDate() + 7);
                 return eventDate < now || eventDate > nextWeek;
             case 'month':
-                const nextMonth = new Date(now);
-                nextMonth.setMonth(now.getMonth() + 1);
+                const nextMonth = new Date(now); nextMonth.setMonth(now.getMonth() + 1);
                 return eventDate < now || eventDate > nextMonth;
             case '3months':
-                const next3Months = new Date(now);
-                next3Months.setMonth(now.getMonth() + 3);
+                const next3Months = new Date(now); next3Months.setMonth(now.getMonth() + 3);
                 return eventDate < now || eventDate > next3Months;
             case '6months':
-                const next6Months = new Date(now);
-                next6Months.setMonth(now.getMonth() + 6);
+                const next6Months = new Date(now); next6Months.setMonth(now.getMonth() + 6);
                 return eventDate < now || eventDate > next6Months;
-            default:
-                return false;
+            default: return false;
         }
+    }
+
+
+    getFilteredEvents(state, includeArtistFilter) {
+        const { events, activeFilters } = state;
+        const filteredEvents = events.filter(event => {
+            const { country } = getCountryAndFlag(event.location);
+            const countryMatch = this.isEventFilteredByCountry(normalizeCountry(country), activeFilters.country);
+            const dateMatch = !this.isEventFilteredByDate(event, activeFilters.date);
+            if (includeArtistFilter) {
+                const artistMatch = activeFilters.artist === 'all' || event.artist.name === activeFilters.artist;
+                return countryMatch && dateMatch && artistMatch;
+            } else {
+                return countryMatch && dateMatch;
+            }
+        });
+        return filteredEvents;
     }
 
     attachEventListeners() {
@@ -198,11 +168,16 @@ class EventsView extends HTMLElement {
                 const currentFilters = store.getState().activeFilters;
                 const newFilters = { ...currentFilters };
 
-                if (group === 'date') {
+                if (group === 'artist') {
+                    newFilters.artist = filter;
+                } else if (group === 'date') {
                     newFilters.date = filter;
                 } else {
                     newFilters.country = filter;
                 }
+                
+                // Artist filter selection is independent - don't reset when country/date changes
+                // This allows users to keep their artist selection even if temporarily no events match
 
                 store.setState({ activeFilters: newFilters });
             });

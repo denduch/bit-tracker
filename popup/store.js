@@ -40,7 +40,7 @@ const initialState = {
   events: [],
   isLoading: true,
   eventsLoadingProgress: { current: 0, total: 0 },
-  activeFilters: { country: 'everywhere', date: 'anytime' },
+    activeFilters: { country: 'everywhere', date: 'anytime', artist: 'all' },
   collapsedEventFilterGroups: [],
 };
 
@@ -53,7 +53,7 @@ async function loadInitialData() {
       storageManager.get('tracked-artists', []),
       storageManager.get('tracked-events', []),
       storageManager.get('activeEventFilter', null), // For migration
-      storageManager.get('activeFilters', { country: 'everywhere', date: 'anytime' }),
+            storageManager.get('activeFilters', { country: 'everywhere', date: 'anytime', artist: 'all' }),
       storageManager.get('collapsedEventFilterGroups', [])
     ]);
 

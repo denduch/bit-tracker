@@ -145,3 +145,14 @@
     color: var(--filter-color-date-active);
     border-color: var(--color-black);
 }
+
+.filter-option[data-group="artist"] {
+    border-color: var(--filter-color-artist);
+    color: var(--filter-color-artist);
+}
+
+.filter-option[data-group="artist"].active {
+    background: var(--filter-bg-artist-active);
+    color: var(--filter-color-artist-active);
+    border-color: var(--color-black);
+}

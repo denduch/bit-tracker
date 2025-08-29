@@ -1,6 +1,6 @@
 class FilterView extends HTMLElement {
     _config = [];
-    _activeFilters = { country: 'everywhere', date: 'anytime' };
+    _activeFilters = { country: 'everywhere', date: 'anytime', artist: 'all' };
     _collapsedGroups = [];
 
     constructor() {
@@ -35,10 +35,20 @@ class FilterView extends HTMLElement {
                 const value = filterOption.dataset.value;
                 const group = filterOption.dataset.group;
 
-                const isDateGroup = this._config.find(c => c.label === 'Filter by date').options.some(o => o.group === group);
-                const filterType = isDateGroup ? 'date' : 'country';
-
-                const defaultValue = filterType === 'date' ? 'anytime' : 'everywhere';
+                const isDateGroup = this._config.find(c => c.label === 'Filter by date')?.options.some(o => o.group === group);
+                const isArtistGroup = this._config.find(c => c.label === 'Filter by artist')?.options.some(o => o.group === group);
+                
+                let filterType, defaultValue;
+                if (isDateGroup) {
+                    filterType = 'date';
+                    defaultValue = 'anytime';
+                } else if (isArtistGroup) {
+                    filterType = 'artist';
+                    defaultValue = 'all';
+                } else {
+                    filterType = 'country';
+                    defaultValue = 'everywhere';
+                }
 
                 if (this._activeFilters[filterType] === value) {
                     this.dispatchEvent(new CustomEvent('filter-changed', { detail: { filter: defaultValue, group: filterType } }));
@@ -62,7 +72,16 @@ class FilterView extends HTMLElement {
             const value = option.dataset.value;
             const group = option.dataset.group;
             const isDateGroup = this._config.find(c => c.label === 'Filter by date')?.options.some(o => o.group === group);
-            const filterType = isDateGroup ? 'date' : 'country';
+            const isArtistGroup = this._config.find(c => c.label === 'Filter by artist')?.options.some(o => o.group === group);
+            
+            let filterType;
+            if (isDateGroup) {
+                filterType = 'date';
+            } else if (isArtistGroup) {
+                filterType = 'artist';
+            } else {
+                filterType = 'country';
+            }
 
             option.classList.toggle('active', value === this._activeFilters[filterType]);
         });

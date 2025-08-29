@@ -113,6 +113,20 @@ function getCountryFilterGroups(events) {
     }];
 }
 
+export const getArtistFilterGroups = (events) => {
+        const artists = [...new Set(events.map(event => event.artist.name))].sort();
+
+    const artistOptions = [
+        { value: 'all', label: 'All artists' },
+        ...artists.map(artist => ({ value: artist, label: artist }))
+    ].map(option => ({ ...option, group: 'artist' }));
+
+    return [{
+        label: 'Filter by artist',
+        options: artistOptions
+    }];
+}
+
 const getDateFilterGroups = () => {
     const dateOptions = [
         { value: 'anytime', label: 'Anytime' },
