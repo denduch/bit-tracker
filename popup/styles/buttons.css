@@ -1,10 +1,10 @@
 .button {
-    padding: 8px 16px;
-    border-radius: 6px;
+    padding: var(--space-s) var(--space-l);
+    border-radius: var(--border-radius-s);
     font-family: 'Roboto', sans-serif;
-    font-size: 14px;
+    font-size: var(--font-size-l);
     font-weight: bold;
-    color: white;
+    color: var(--color-white);
     cursor: pointer;
     text-align: center;
     text-decoration: none;
@@ -12,7 +12,7 @@
     background-position: 0 0;
     background-size: 400%;
     background-repeat: no-repeat;
-    border: 1px solid black;
+    border: 1px solid var(--color-black);
     transition: background-position 0.2s ease-out;
 
     &:hover {

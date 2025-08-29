@@ -2,19 +2,19 @@
     display: flex;
     align-items: center;
     background: var(--color-background-secondary);
-    border-radius: 8px;
+    border-radius: var(--border-radius-m);
     gap: 10px;
-    border: 1px solid black;
+    border: 1px solid var(--color-black);
     overflow: hidden;
     align-items: start;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    box-shadow: var(--shadow-main);
     transition: all 0.2s ease-out;
     cursor: pointer;
     width: 100%;
 
     &:hover {
-        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
-        background: #333;
+        box-shadow: var(--shadow-hover);
+        background: var(--color-background-secondary-hover);
     }
 
     .image {
@@ -30,7 +30,7 @@
     .details {
         flex: 1;
         color: var(--color-text-primary);
-        padding-block: 8px;
+        padding-block: var(--space-s);
     }
     
     .name {
@@ -41,7 +41,7 @@
     .sub-details {
         font-size: 11px;
         color: var(--color-text-secondary);
-        margin-top: 4px;
+        margin-top: var(--space-xs);
     }
 
     .status {
@@ -51,15 +51,15 @@
 
     .date-display, .status-badge {
         background-color: var(--color-accent);
-        color: white;
-        padding: 8px 12px;
-        font-size: 10px;
+        color: var(--color-white);
+        padding: var(--space-s) var(--space-m);
+        font-size: var(--font-size-s);
         font-weight: bold;
         position: absolute;
         right: -1px;
         top: -1px;
-        border: 1px solid black;
-        border-bottom-left-radius: 12px;
+        border: 1px solid var(--color-black);
+        border-bottom-left-radius: var(--border-radius-l);
         background: var(--gradient-accent);
         white-space: nowrap;
     }
@@ -73,17 +73,17 @@
         padding-inline: 0;
 
         .day {
-            font-size: 14px;
-            color: black;
+            font-size: var(--font-size-l);
+            color: var(--color-black);
             opacity: 0.7;
         }
 
         .month {
-            font-size: 14px;
+            font-size: var(--font-size-l);
         }
 
         .year {
-            font-size: 10px;
+            font-size: var(--font-size-s);
             opacity: 0.8;
         }
     }

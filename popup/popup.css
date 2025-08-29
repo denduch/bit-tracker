@@ -1,30 +1,4 @@
-:root {
-    --color-background-main: #2c2c2c;
-    --color-background-secondary: #444;
-    --color-text-primary: #f0f0f0;
-    --color-text-secondary: #aaa;
-    --color-border-primary: #444;
-    --gradient-accent: linear-gradient(to right, #ff8c00, #ff4500);
-    --gradient-accent-button: linear-gradient(to right, #ff8c00, #ff4500, #ff4500, #ff8c00, #ff8c00, #ff4500, #ff4500, #ff8c00);
-    --gradient-secondary: linear-gradient(to right, #4c515a, #3a3f47);
-    --gradient-secondary-button: linear-gradient(to right, #4c515a, #3a3f47, #3a3f47, #4c515a, #4c515a, #3a3f47, #3a3f47, #4c515a);
-
-    --filter-color-general: #aaa;
-    --filter-color-general-active: #fff;
-    --filter-bg-general-active: #777;
-
-    --filter-color-europe: #6caddf;
-    --filter-color-europe-active: #fff;
-    --filter-bg-europe-active: #4a90e2;
-
-    --filter-color-world: #8fde5d;
-    --filter-color-world-active: #fff;
-    --filter-bg-world-active: #64c322;
-
-    --filter-color-poland: #ffc107;
-    --filter-color-poland-active: #fff;
-    --filter-bg-poland-active: #e69500;
-}
+@import url('styles/variables.css');
 body {
     font-family: Roboto, Arial, sans-serif;
     margin: 0;
@@ -41,13 +15,13 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: #202020;
+    background: var(--color-background-main);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #444;
-    border-radius: 4px;
-    border: 2px solid #202020;
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-s);
+    border: 2px solid var(--color-background-main);
     background-clip: padding-box;
 }
 
@@ -57,16 +31,16 @@ body {
 
 .settings-container {
     position: absolute;
-    top: 8px;
+    top: var(--space-s);
     right: 18px;
     display: flex;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--font-size-m);
 
 }
 
 .settings-container span {
-    margin-left: 8px;
+    margin-left: var(--space-s);
 }
 
 /* The switch - the box around the slider */
@@ -97,7 +71,7 @@ body {
     border-radius: 10px;
     width: 34px;
     height: 20px;
-    border: 1px solid black;
+    border: 1px solid var(--color-black);
 }
 
 .slider:before {
@@ -107,10 +81,10 @@ body {
     width: 14px;
     left: 2px;
     bottom: 2px;
-    background-color: white;
+    background-color: var(--color-white);
     transition: .4s;
     border-radius: 50%;
-    border: 1px solid black;
+    border: 1px solid var(--color-black);
 }
 
 input:checked + .slider {

@@ -1,0 +1,57 @@
+:root {
+    /* Colors */
+    --color-background-main: #2c2c2c;
+    --color-background-secondary: #444;
+    --color-background-secondary-hover: #333;
+    --color-text-primary: #f0f0f0;
+    --color-text-secondary: #aaa;
+    --color-white: #fff;
+    --color-black: #000;
+    --color-accent: #ff8c00;
+    --color-border: #444;
+
+    /* Gradients */
+    --gradient-accent: linear-gradient(to right, #ff8c00, #ff4500);
+    --gradient-accent-button: linear-gradient(to right, #ff8c00, #ff4500, #ff4500, #ff8c00, #ff8c00, #ff4500, #ff4500, #ff8c00);
+    --gradient-secondary: linear-gradient(to right, #4c515a, #3a3f47);
+    --gradient-secondary-button: linear-gradient(to right, #4c515a, #3a3f47, #3a3f47, #4c515a, #4c515a, #3a3f47, #3a3f47, #4c515a);
+
+    /* Filter Colors */
+    --filter-color-general: #aaa;
+    --filter-color-general-active: #fff;
+    --filter-bg-general-active: #777;
+
+    --filter-color-europe: #6caddf;
+    --filter-color-europe-active: #fff;
+    --filter-bg-europe-active: #4a90e2;
+
+    --filter-color-world: #8fde5d;
+    --filter-color-world-active: #fff;
+    --filter-bg-world-active: #64c322;
+
+    --filter-color-poland: #ffc107;
+    --filter-color-poland-active: #fff;
+    --filter-bg-poland-active: #e69500;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-s: 8px;
+    --space-m: 12px;
+    --space-l: 16px;
+    --space-xl: 24px;
+
+    /* Borders */
+    --border-radius-s: 4px;
+    --border-radius-m: 8px;
+    --border-radius-l: 12px;
+
+    /* Shadows */
+    --shadow-main: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    --shadow-hover: 1px 1px 5px rgba(0, 0, 0, 0.6);
+
+    /* Fonts */
+    --font-size-s: 10px;
+    --font-size-m: 12px;
+    --font-size-l: 14px;
+    --font-size-xl: 24px;
+}
