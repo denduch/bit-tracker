@@ -9,8 +9,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: var(--space-s);
+    padding-bottom: var(--space-m);
 }
 
 .filter-group:last-child {
@@ -32,6 +31,9 @@
 
     &:hover {
         color: var(--color-text-primary);
+        &::after {
+            border-color: var(--color-text-primary);
+        }
     }
 }
 
@@ -40,7 +42,7 @@
     border: solid var(--color-text-secondary);
     border-width: 0 2px 2px 0;
     display: inline-block;
-    padding: 3px;
+    padding: 2px;
     transform: rotate(45deg);
 }
 
@@ -131,4 +133,15 @@
     background-color: var(--filter-bg-poland-active);
     color: var(--filter-color-poland-active);
     border-color: var(--filter-bg-poland-active);
+}
+
+.filter-option[data-group="date"] {
+    border-color: var(--filter-color-date);
+    color: var(--filter-color-date);
+}
+
+.filter-option[data-group="date"].active {
+    background-color: var(--filter-bg-date-active);
+    color: var(--filter-color-date-active);
+    border-color: var(--filter-bg-date-active);
 }

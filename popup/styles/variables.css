@@ -21,9 +21,9 @@
     --filter-color-world-active: #fff;
     --filter-bg-world-active: #777;
 
-    --filter-color-europe: #6caddf;
+        --filter-color-europe: var(--color-accent);
     --filter-color-europe-active: #fff;
-    --filter-bg-europe-active: #4a90e2;
+        --filter-bg-europe-active: var(--color-accent);
 
     --filter-color-general: #8fde5d;
     --filter-color-general-active: #fff;
@@ -32,6 +32,10 @@
     --filter-color-poland: #ffc107;
     --filter-color-poland-active: #fff;
     --filter-bg-poland-active: #e69500;
+
+        --filter-color-date: var(--color-accent);
+    --filter-color-date-active: #fff;
+        --filter-bg-date-active: var(--color-accent);
 
     /* Spacing */
     --space-xs: 4px;

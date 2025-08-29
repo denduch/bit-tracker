@@ -84,6 +84,14 @@ class StorageManager {
    * @param {Object} items An object with key-value pairs to store.
    * @returns {Promise<void>}
    */
+  async remove(key) {
+    try {
+      await this.storage.remove(key);
+    } catch (error) {
+      console.error(`Error removing item '${key}' from storage:`, error);
+    }
+  }
+
   async setAll(items) {
     try {
       await this.storage.set(items);

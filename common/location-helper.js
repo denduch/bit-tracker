@@ -113,4 +113,21 @@ function getCountryFilterGroups(events) {
     }];
 }
 
-export { getCountryAndFlag, getCountryFilterGroups, europeanCountries, usStates, normalizeCountry };
+const getDateFilterGroups = () => {
+    const dateOptions = [
+        { value: 'anytime', label: 'Kiedykolwiek' },
+        { value: 'today', label: 'Today' },
+        { value: 'tomorrow', label: 'Tomorrow' },
+        { value: 'week', label: 'Next 7 days' },
+        { value: 'month', label: 'Next 30 days' },
+        { value: '3months', label: 'Next 3 months' },
+        { value: '6months', label: 'Next 6 months' },
+    ].map(option => ({ ...option, group: 'date' }));
+
+    return [{
+        label: 'Filter by date',
+        options: dateOptions
+    }];
+};
+
+export { getCountryAndFlag, getCountryFilterGroups, europeanCountries, usStates, normalizeCountry, getDateFilterGroups };

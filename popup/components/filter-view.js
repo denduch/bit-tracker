@@ -1,6 +1,6 @@
 class FilterView extends HTMLElement {
     _config = [];
-    _activeFilter = '';
+    _activeFilters = { country: 'everywhere', date: 'anytime' };
     _collapsedGroups = [];
 
     constructor() {
@@ -13,8 +13,8 @@ class FilterView extends HTMLElement {
         this.render();
     }
 
-    set activeFilter(newValue) {
-        this._activeFilter = newValue;
+    set activeFilters(newValues) {
+        this._activeFilters = newValues;
         this.updateActiveState();
     }
 
@@ -31,12 +31,19 @@ class FilterView extends HTMLElement {
     addEventListeners() {
         this.shadowRoot.addEventListener('click', (e) => {
             const filterOption = e.target.closest('.filter-option');
-            if (filterOption) {
+            if (filterOption && this._config) {
                 const value = filterOption.dataset.value;
-                if (this._activeFilter === value) {
-                    this.dispatchEvent(new CustomEvent('filter-changed', { detail: { filter: 'everywhere' } }));
+                const group = filterOption.dataset.group;
+
+                const isDateGroup = this._config.find(c => c.label === 'Filter by date').options.some(o => o.group === group);
+                const filterType = isDateGroup ? 'date' : 'country';
+
+                const defaultValue = filterType === 'date' ? 'anytime' : 'everywhere';
+
+                if (this._activeFilters[filterType] === value) {
+                    this.dispatchEvent(new CustomEvent('filter-changed', { detail: { filter: defaultValue, group: filterType } }));
                 } else {
-                    this.dispatchEvent(new CustomEvent('filter-changed', { detail: { filter: value } }));
+                    this.dispatchEvent(new CustomEvent('filter-changed', { detail: { filter: value, group: filterType } }));
                 }
                 return;
             }
@@ -52,7 +59,12 @@ class FilterView extends HTMLElement {
 
     updateActiveState() {
         this.shadowRoot.querySelectorAll('.filter-option').forEach(option => {
-            option.classList.toggle('active', option.dataset.value === this._activeFilter);
+            const value = option.dataset.value;
+            const group = option.dataset.group;
+            const isDateGroup = this._config.find(c => c.label === 'Filter by date')?.options.some(o => o.group === group);
+            const filterType = isDateGroup ? 'date' : 'country';
+
+            option.classList.toggle('active', value === this._activeFilters[filterType]);
         });
     }
 
