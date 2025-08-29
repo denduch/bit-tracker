@@ -1,6 +1,7 @@
 :root {
     /* Colors */
     --color-background-main: #2c2c2c;
+    --color-background-dark: #1c1c1c;
     --color-background-secondary: #444;
     --color-background-secondary-hover: #333;
     --color-text-primary: #f0f0f0;

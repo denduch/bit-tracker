@@ -7,23 +7,16 @@
     <link rel="stylesheet" href="styles/buttons.css">
 </head>
 <body>
-    <div class="header-controls">
-        <button id="export-button" class="button primary" title="Export data">Export</button>
-        <button id="import-button" class="button secondary" title="Import data">Import</button>
-        <input type="file" id="import-file-input" style="display: none;" accept=".json">
-        <label class="toggle-switch" title="Toggle mock data">
-            <input type="checkbox" id="mock-toggle">
-            <span class="slider"></span>
-        </label>
-    </div>
     <tab-view>
         <artists-view class="panel" slot="artists"></artists-view>
         <events-view class="panel" slot="events"></events-view>
+        <settings-view class="panel" slot="settings"></settings-view>
     </tab-view>
 
     <script type="module" src="components/tab-view.js"></script>
     <script type="module" src="components/artists-view.js"></script>
     <script type="module" src="components/events-view.js"></script>
+    <script type="module" src="components/settings-view.js"></script>
     <script type="module" src="popup.js"></script>
 </body>
 </html>

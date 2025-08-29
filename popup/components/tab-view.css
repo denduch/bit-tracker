@@ -17,20 +17,29 @@
             padding: 10px 15px;
             cursor: pointer;
             border: none;
-            background: none;
+            background: var(--color-background-dark);
             font-size: 16px;
             color: var(--color-text-secondary);
             border-bottom: 2px solid transparent;
         }
 
+        &.settings-tab {
+            flex: 0 0 auto;
+            min-width: 50px;
+            padding: 10px;
+            font-size: 18px;
+        }
+
         &:hover {
-            color: var(--color-text-primary);
+            background: var(--color-background-secondary-hover);
         }
 
         &.active {
+            background: var(--color-background-main);
             color: var(--color-text-primary);
             font-weight: bold;
             border-image: var(--gradient-accent) 1;
+            pointer-events: none;
         }
     }
 }

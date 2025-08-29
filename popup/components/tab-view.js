@@ -19,10 +19,12 @@ class TabView extends HTMLElement {
             <div class="tabs">
                 <button class="tab active" data-tab="artists">Artists</button>
                 <button class="tab" data-tab="events">Events</button>
+                <button class="tab settings-tab" data-tab="settings">⚙️</button>
             </div>
             <div class="panels">
                 <slot name="artists"></slot>
                 <slot name="events"></slot>
+                <slot name="settings"></slot>
             </div>
         `;
     }
