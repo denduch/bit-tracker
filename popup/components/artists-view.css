@@ -1,32 +1,6 @@
-.panel-header {
-    position: relative;
-    text-align: center;
-    height: 40px;
+@import url('../styles/shared.css');
 
-    h2 {
-        font-size: 24px;
-        color: var(--color-text-primary);
-        margin: 0 0 10px 0;
-        display: inline-block;
-        background: var(--gradient-accent);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .refresh-artists-button {
-        position: absolute;
-        right: 0;
-        top: 0;
-        padding: 4px 8px;
-    }
-}
-
-.artist-list {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
+/* Component-specific styles for artists view */
 
 
 

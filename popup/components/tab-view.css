@@ -6,7 +6,6 @@
         border-bottom: 1px solid var(--color-border-primary);
         position: sticky;
         top: 0;
-        background-color: var(--color-background-main);
         z-index: 1;
     }
 
@@ -20,7 +19,7 @@
             background: var(--color-background-dark);
             font-size: 16px;
             color: var(--color-text-secondary);
-            border-bottom: 2px solid transparent;
+            border-bottom: 2px solid var(--color-black);
         }
 
         &.settings-tab {

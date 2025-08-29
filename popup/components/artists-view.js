@@ -30,11 +30,11 @@ class ArtistsView extends HTMLElement {
             <div>
                 <div class="panel-header">
                     <h2>${artists.length || 0} Artists</h2>
-                    <button id="refresh-button" class="button primary refresh-artists-button" title="Refresh artist list">&#x21bb;</button>
+                    <button id="refresh-button" class="button primary refresh-artists-button refresh-button" title="Refresh artist list">&#x21bb;</button>
                 </div>
                 ${isLoading ? '<p>Loading artists...</p>' : `
                     ${artists.length > 0 ? `
-                        <div class="artist-list">
+                        <div class="artist-list list-container">
                             ${artists.map(artist => `
                                 <tile-view 
                                     image-src="${artist.properlySizedArtistImageURL}"

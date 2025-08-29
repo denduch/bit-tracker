@@ -52,7 +52,7 @@ class EventsView extends HTMLElement {
                     ${(isLoading && sortedEvents.length === 0) ? '<p>Loading events...</p>' : `
                         <filter-view></filter-view>
                         <div class="events-list-container">
-                            <div class="events-list">
+                            <div class="events-list list-container">
                                 ${filteredEvents.length > 0 ? filteredEvents.map(event => {
                                     const { country, flag } = getCountryAndFlag(event.location);
                                     const details = `${country}, ${event.location} ${flag}`;
@@ -85,8 +85,9 @@ class EventsView extends HTMLElement {
         header.innerHTML = `
             <h2>${visibleEventsCount} Events</h2>
             ${(isLoading && eventsLoadingProgress.total > 0)
-                ? `<div class="loading-progress">${eventsLoadingProgress.current}/${eventsLoadingProgress.total}</div>`
-                : `<button id="refresh-button" class="button primary refresh-events-button ${isLoading ? 'loading' : ''}" title="Refresh event list">&#x21bb;</button>`
+                ? `<div class="loading-progress">${eventsLoadingProgress.current}/${eventsLoadingProgress.total}</div>
+                <button id="refresh-button" class="button primary refresh-events-button refresh-button ${isLoading ? 'loading' : ''}" title="Refresh event list">&#x21bb;</button>`
+                : `<button id="refresh-button" class="button primary refresh-events-button refresh-button ${isLoading ? 'loading' : ''}" title="Refresh event list">&#x21bb;</button>`
             }
         `;
     }

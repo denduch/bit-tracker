@@ -81,11 +81,11 @@ class SettingsView extends HTMLElement {
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="components/settings-view.css">
             <link rel="stylesheet" href="styles/buttons.css">
-            <div class="container">
+            <div class="container panel-container">
                 <div class="panel-header">
-                    <h2>⚙️ Settings</h2>
+                    <h2>Settings</h2>
                 </div>
-                <div class="content">
+                <div class="content panel-content">
                     <div class="settings-section">
                         <h3>Data Management</h3>
                         <p class="section-description">Backup and restore your tracked artists and events data.</p>
