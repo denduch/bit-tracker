@@ -85,7 +85,7 @@ class SettingsView extends HTMLElement {
                 <div class="panel-header">
                     <h2>Settings</h2>
                 </div>
-                <div class="content panel-content">
+                <div class="content">
                     <div class="settings-section">
                         <h3>Data Management</h3>
                         <p class="section-description">Backup and restore your tracked artists and events data.</p>
