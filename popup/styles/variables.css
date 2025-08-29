@@ -19,23 +19,23 @@
     /* Filter Colors */
     --filter-color-world: #aaa;
     --filter-color-world-active: #fff;
-    --filter-bg-world-active: #777;
+    --filter-bg-world-active: linear-gradient(to right, #9aa5b1, #6a6f77);
 
-        --filter-color-europe: var(--color-accent);
+    --filter-color-europe: var(--color-accent);
     --filter-color-europe-active: #fff;
-        --filter-bg-europe-active: var(--color-accent);
+    --filter-bg-europe-active: var(--gradient-accent);
 
     --filter-color-general: #8fde5d;
     --filter-color-general-active: #fff;
-    --filter-bg-general-active: #64c322;
+    --filter-bg-general-active: linear-gradient(to right, #64df18, #06d865);
 
     --filter-color-poland: #ffc107;
     --filter-color-poland-active: #fff;
-    --filter-bg-poland-active: #e69500;
+    --filter-bg-poland-active: linear-gradient(to right, #dee200, #f5dd00);
 
-        --filter-color-date: var(--color-accent);
+    --filter-color-date: var(--color-accent);
     --filter-color-date-active: #fff;
-        --filter-bg-date-active: var(--color-accent);
+    --filter-bg-date-active: var(--gradient-accent);
 
     /* Spacing */
     --space-xs: 4px;

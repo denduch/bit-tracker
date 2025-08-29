@@ -115,7 +115,7 @@ function getCountryFilterGroups(events) {
 
 const getDateFilterGroups = () => {
     const dateOptions = [
-        { value: 'anytime', label: 'Kiedykolwiek' },
+        { value: 'anytime', label: 'Anytime' },
         { value: 'today', label: 'Today' },
         { value: 'tomorrow', label: 'Tomorrow' },
         { value: 'week', label: 'Next 7 days' },

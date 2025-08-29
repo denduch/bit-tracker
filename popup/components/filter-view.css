@@ -77,18 +77,18 @@
 .filter-option {
     padding: var(--space-xs) 10px;
     border-radius: var(--border-radius-l);
-    background-color: var(--color-background-secondary);
+    background: var(--color-background-secondary);
     font-size: var(--font-size-m);
     cursor: pointer;
     border: 1px solid;
 }
 
-.filter-option:not(.active):hover {
-    background-color: var(--color-background-secondary-hover);
+.filter-option:hover {
+    background: var(--color-background-secondary-hover);
 }
 
-.filter-option:hover {
-    border-color: var(--color-accent);
+.filter-option.active {
+    text-shadow: 0 0 3px var(--color-black);
 }
 
 .filter-option[data-group="general"] {
@@ -97,9 +97,9 @@
 }
 
 .filter-option[data-group="general"].active {
-    background-color: var(--filter-bg-general-active);
+    background: var(--filter-bg-general-active);
     color: var(--filter-color-general-active);
-    border-color: var(--filter-bg-general-active);
+    border-color: var(--color-black);
 }
 
 .filter-option[data-group="europe"] {
@@ -108,9 +108,9 @@
 }
 
 .filter-option[data-group="europe"].active {
-    background-color: var(--filter-bg-europe-active);
+    background: var(--filter-bg-europe-active);
     color: var(--filter-color-europe-active);
-    border-color: var(--filter-bg-europe-active);
+    border-color: var(--color-black);
 }
 
 .filter-option[data-group="world"] {
@@ -119,9 +119,9 @@
 }
 
 .filter-option[data-group="world"].active {
-    background-color: var(--filter-bg-world-active);
+    background: var(--filter-bg-world-active);
     color: var(--filter-color-world-active);
-    border-color: var(--filter-bg-world-active);
+    border-color: var(--color-black);
 }
 
 .filter-option[data-group="poland"] {
@@ -130,9 +130,9 @@
 }
 
 .filter-option[data-group="poland"].active {
-    background-color: var(--filter-bg-poland-active);
+    background: var(--filter-bg-poland-active);
     color: var(--filter-color-poland-active);
-    border-color: var(--filter-bg-poland-active);
+    border-color: var(--color-black);
 }
 
 .filter-option[data-group="date"] {
@@ -141,7 +141,7 @@
 }
 
 .filter-option[data-group="date"].active {
-    background-color: var(--filter-bg-date-active);
+    background: var(--filter-bg-date-active);
     color: var(--filter-color-date-active);
-    border-color: var(--filter-bg-date-active);
+    border-color: var(--color-black);
 }
