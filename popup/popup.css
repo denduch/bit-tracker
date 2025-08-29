@@ -8,26 +8,6 @@ body {
     position: relative;
 }
 
-/* Custom Scrollbar Styles */
-::-webkit-scrollbar {
-    width: 14px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--color-background-main);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--color-background-secondary);
-    border-radius: var(--border-radius-s);
-    border: 2px solid var(--color-background-main);
-    background-clip: padding-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--gradient-accent);
-}
-
 .settings-container {
     position: absolute;
     top: var(--space-s);
