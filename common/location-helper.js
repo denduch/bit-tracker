@@ -106,16 +106,37 @@ const countryToCodeMap = {
     'Bahrain': 'bh'
 };
 
+function removeCountryFromLocation(location, country) {
+    if (!location || !country) return location;
+    
+    const parts = location.split(',').map(part => part.trim());
+    
+    // Remove exact country matches from the end
+    const filteredParts = parts.filter((part, index) => {
+        // Don't remove if it's the only part
+        if (parts.length === 1) return true;
+        
+        // Check if this part matches the country name
+        const normalizedPart = normalizeCountry(part);
+        return normalizedPart !== country;
+    });
+    
+    return filteredParts.join(', ');
+}
+
 function getCountryAndFlag(location) {
     if (!location) {
-        return { country: '', code: '' };
+        return { country: '', code: '', cleanLocation: '' };
     }
 
     const normalizedCountry = normalizeCountry(location);
     const countryCode = countryToCodeMap[normalizedCountry] || '';
+    const cleanLocation = removeCountryFromLocation(location, normalizedCountry);
+    
     return { 
         country: normalizedCountry || '', 
-        code: countryCode
+        code: countryCode,
+        cleanLocation: cleanLocation
     };
 }
 

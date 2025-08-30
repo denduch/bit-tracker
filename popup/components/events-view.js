@@ -55,8 +55,8 @@ class EventsView extends HTMLElement {
                         <div class="events-list-container">
                             <div class="events-list list-container">
                                 ${filteredEvents.length > 0 ? filteredEvents.map(event => {
-                                    const { country, code } = getCountryAndFlag(event.location);
-                                    const details = `${country}, ${event.location}`;
+                                    const { country, code, cleanLocation } = getCountryAndFlag(event.location);
+                                    const details = `${country}, ${cleanLocation}`;
                                     return `
                                     <tile-view class="event-tile"
                                         data-country="${normalizeCountry(country)}"

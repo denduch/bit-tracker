@@ -31,6 +31,7 @@
         flex: 1;
         color: var(--color-text-primary);
         padding-block: var(--space-s);
+        min-width: 0;
     }
     
     .name {
@@ -42,10 +43,13 @@
         font-size: 11px;
         color: var(--color-text-secondary);
         margin-top: var(--space-xs);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .status {
-        flex: 0 0 70px;
+        flex: 0 0 60px;
         position: relative;
     }
 
