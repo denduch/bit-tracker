@@ -19,9 +19,6 @@ class Store {
       storageManager.set('activeFilters', newState.activeFilters);
     }
 
-    if (newState.collapsedEventFilterGroups !== undefined) {
-        storageManager.set('collapsedEventFilterGroups', newState.collapsedEventFilterGroups);
-    }
 
     this.listeners.forEach(listener => listener(this.state));
   }
@@ -40,7 +37,6 @@ const initialState = {
   isLoading: true,
   eventsLoadingProgress: { current: 0, total: 0 },
   activeFilters: { country: 'everywhere', date: 'anytime', artist: 'all' },
-  collapsedEventFilterGroups: [],
 };
 
 export const store = new Store(initialState);
@@ -48,11 +44,10 @@ export const store = new Store(initialState);
 async function loadInitialData() {
   store.setState({ isLoading: true });
   try {
-    const [artists, oldActiveFilter, activeFilters, collapsedEventFilterGroups] = await Promise.all([
+    const [artists, oldActiveFilter, activeFilters] = await Promise.all([
       storageManager.get('tracked-data', []),
       storageManager.get('activeEventFilter', null), // For migration
-      storageManager.get('activeFilters', { country: 'everywhere', date: 'anytime', artist: 'all' }),
-      storageManager.get('collapsedEventFilterGroups', [])
+      storageManager.get('activeFilters', { country: 'everywhere', date: 'anytime', artist: 'all' })
     ]);
 
     if (oldActiveFilter) {
@@ -64,7 +59,6 @@ async function loadInitialData() {
     store.setState({
       artists,
       activeFilters,
-      collapsedEventFilterGroups,
       isLoading: false
     });
   } catch (error) {

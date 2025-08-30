@@ -98,12 +98,11 @@ class EventsView extends HTMLElement {
         `;
     }
 
-    updateFilterView(filterGroups, activeFilters, collapsedGroups) {
+    updateFilterView(filterGroups, activeFilters) {
         const filterView = this.shadowRoot.querySelector('filter-view');
         if (filterView) {
             filterView.config = filterGroups;
             filterView.activeFilters = activeFilters;
-            filterView.collapsedGroups = collapsedGroups;
         }
     }
 
@@ -175,26 +174,11 @@ class EventsView extends HTMLElement {
                 const currentFilters = store.getState().activeFilters;
                 const newFilters = { ...currentFilters };
 
-                if (group === 'artist') {
-                    newFilters.artist = filter;
-                } else if (group === 'date') {
-                    newFilters.date = filter;
-                } else {
-                    newFilters.country = filter;
+                if (group === 'country' || group === 'date' || group === 'artist') {
+                    newFilters[group] = filter;
                 }
-                
-                // Artist filter selection is independent - don't reset when country/date changes
-                // This allows users to keep their artist selection even if temporarily no events match
 
                 store.setState({ activeFilters: newFilters });
-            });
-            filterView.addEventListener('group-toggle', (e) => {
-                const { groupName } = e.detail;
-                const currentCollapsed = store.getState().collapsedEventFilterGroups;
-                const newCollapsed = currentCollapsed.includes(groupName)
-                    ? currentCollapsed.filter(g => g !== groupName)
-                    : [...currentCollapsed, groupName];
-                store.setState({ collapsedEventFilterGroups: newCollapsed });
             });
             filterView.dataset.listenerAttached = 'true';
         }
