@@ -16,29 +16,21 @@ async function getTrackedArtists() {
   return artists;
 }
 
-async function getArtstEvent(artist) {
-  console.log(`Fetching events for ${artist.name} from ${artist.artistPageUrl}`, artist);
-  
+async function getEventsForArtist(artist) {
+  console.log(`Fetching events for ${artist.name} from ${artist.artistPageUrl}`);
   const response = await fetch(artist.artistPageUrl);
   if (!response.ok) {
     console.error(`Failed to fetch page for ${artist.name}: ${response.statusText}`);
-    return;
+    return [];
   }
-  let allEvents = [];
   const html = await response.text();
   const events = parseEventsFromHTML(html);
-  if (events.length > 0) {
-    const eventsWithArtist = events.map(event => ({ ...event, artist, artist_id: artist.id }));
-    allEvents = allEvents.concat(eventsWithArtist);
-  } else {
-    console.log(`No events found on page for ${artist.name}`);
-  }
-  return allEvents;
+  // Return events with artist_id for mapping, but not the whole artist object.
+  return events.map(event => ({ ...event, artist_id: artist.id }));
 }
 
-async function getArtistEvents() {
+async function getArtistEvents(artists) {
   console.log('Fetching events from Bandsintown...');
-  const artists = await getTrackedArtists();
   let allEvents = [];
   const BATCH_SIZE = 2;
   const DELAY_MS = 200;
@@ -48,15 +40,14 @@ async function getArtistEvents() {
     console.log(`Processing batch starting with artist ${i + 1}/${artists.length}...`);
 
     const batchPromises = batch.map(artist => 
-      getArtstEvent(artist).catch(error => {
+      getEventsForArtist(artist).catch(error => {
         console.error(`Error processing artist ${artist.name}:`, error);
-        return []; // Return an empty array on error to avoid breaking Promise.all
+        return []; // Return an empty array on error
       })
     );
 
     const results = await Promise.all(batchPromises);
-    const successfulEvents = results.flat().filter(Boolean);
-    allEvents = allEvents.concat(successfulEvents);
+    allEvents = allEvents.concat(results.flat());
 
     communicator.broadcast(MessageType.EVENTS_LOADING_PROGRESS, { 
       current: Math.min(i + BATCH_SIZE, artists.length),

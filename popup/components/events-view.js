@@ -21,9 +21,13 @@ class EventsView extends HTMLElement {
     }
 
     render(state) {
-        const { events, activeFilters, isLoading, eventsLoadingProgress, collapsedEventFilterGroups } = state;
+        const { artists, activeFilters, isLoading, eventsLoadingProgress, collapsedEventFilterGroups } = state;
 
-        const sortedEvents = [...events].sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt));
+        const allEvents = artists.flatMap(artist => 
+            (artist.events || []).map(event => ({ ...event, artist }))
+        );
+
+        const sortedEvents = allEvents.sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt));
         
         // Filter by country and date for events display
         const eventsFilteredByCountryAndDate = sortedEvents.filter(event => {

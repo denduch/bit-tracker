@@ -37,10 +37,9 @@ class Store {
 
 const initialState = {
   artists: [],
-  events: [],
   isLoading: true,
   eventsLoadingProgress: { current: 0, total: 0 },
-    activeFilters: { country: 'everywhere', date: 'anytime', artist: 'all' },
+  activeFilters: { country: 'everywhere', date: 'anytime', artist: 'all' },
   collapsedEventFilterGroups: [],
 };
 
@@ -49,11 +48,10 @@ export const store = new Store(initialState);
 async function loadInitialData() {
   store.setState({ isLoading: true });
   try {
-    const [artists, events, oldActiveFilter, activeFilters, collapsedEventFilterGroups] = await Promise.all([
-      storageManager.get('tracked-artists', []),
-      storageManager.get('tracked-events', []),
+    const [artists, oldActiveFilter, activeFilters, collapsedEventFilterGroups] = await Promise.all([
+      storageManager.get('tracked-data', []),
       storageManager.get('activeEventFilter', null), // For migration
-            storageManager.get('activeFilters', { country: 'everywhere', date: 'anytime', artist: 'all' }),
+      storageManager.get('activeFilters', { country: 'everywhere', date: 'anytime', artist: 'all' }),
       storageManager.get('collapsedEventFilterGroups', [])
     ]);
 
@@ -65,7 +63,6 @@ async function loadInitialData() {
 
     store.setState({
       artists,
-      events,
       activeFilters,
       collapsedEventFilterGroups,
       isLoading: false
@@ -77,16 +74,10 @@ async function loadInitialData() {
 }
 
 // Listen for updates from the service worker
-communicator.on(MessageType.ARTISTS_UPDATED, async () => {
-  console.log('Store received ARTISTS_UPDATED');
-  const artists = await storageManager.get('tracked-artists') || [];
-  store.setState({ artists, isLoading: false });
-});
-
-communicator.on(MessageType.EVENTS_UPDATED, async () => {
-  console.log('Store received EVENTS_UPDATED');
-  const events = await storageManager.get('tracked-events') || [];
-  store.setState({ events, isLoading: false, eventsLoadingProgress: { current: 0, total: 0 } });
+communicator.on(MessageType.DATA_UPDATED, async () => {
+  console.log('Store received DATA_UPDATED');
+  const artists = await storageManager.get('tracked-data') || [];
+  store.setState({ artists, isLoading: false, eventsLoadingProgress: { current: 0, total: 0 } });
 });
 
 communicator.on(MessageType.EVENTS_LOADING_PROGRESS, (progress) => {

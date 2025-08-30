@@ -12,40 +12,27 @@ async function getTrackedArtists() {
   return data.artists;
 }
 
-async function getArtstEvent(artist) {
-  console.log('Fetching events from mock HTML file...');
+async function getEventsForArtist(artist) {
+  console.log(`Fetching mock events for ${artist.name}...`);
   const response = await fetch('../mocks/artist-mock.html');
   if (!response.ok) {
     throw new Error(`Failed to fetch mock artist page: ${response.statusText}`);
   }
-  let allEvents = [];
   const html = await response.text();
   const events = parseEventsFromHTML(html);
-  if (events.length > 0) {
-    const eventsWithArtist = events.map(event => ({ ...event, artist, artist_id: artist.id }));
-    allEvents = allEvents.concat(eventsWithArtist);
-  } else {
-    console.log(`No events found on page for ${artist.name}`);
-  }
-  return allEvents;
+  return events.map(event => ({ ...event, artist_id: artist.id }));
 }
 
-async function getArtistEvents() {
-  console.log('Fetching events from mock HTML file...');
+async function getArtistEvents(artists) {
+  console.log('Fetching mock events...');
   let allEvents = [];
-  allEvents = allEvents.concat(await getArtstEvent({
-    ViewConcertlink: "https://www.bandsintown.com/a/432?came_from=0&utm_medium=web&utm_source=artist_explorer_page&utm_campaign=artist",
-    artistPageUrl: "https://www.bandsintown.com/a/432?came_from=0&utm_medium=web&utm_source=settings_my_artist&utm_campaign=artist",
-    id: 432,
-    imageUrl: "https://photos.bandsintown.com/thumb/8540190.jpeg",
-    media_id: 8540190,
-    name: "A Perfect Circle",
-    on_tour: true,
-    properlySizedArtistImageURL: "https://media.bandsintown.com/50x50/8540190.webp",
-    source: "spotify",
-    timestamp: "2023-06-02T13:08:49",
-    tracker_count: 1101339
-  }));
+  // For simplicity, mock provider returns events for one hardcoded artist
+  // if the artist list is not empty.
+  if (artists && artists.length > 0) {
+    const mockArtist = artists[0]; // Use the first artist for mock events
+    const events = await getEventsForArtist(mockArtist);
+    allEvents.push(...events);
+  }
   return allEvents;
 }
 

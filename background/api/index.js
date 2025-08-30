@@ -14,8 +14,8 @@ export const apiProvider = {
     const provider = await getProvider();
     return provider.getTrackedArtists();
   },
-  async getArtistEvents() {
+  async getArtistEvents(artists) {
     const provider = await getProvider();
-    return provider.getArtistEvents();
+    return provider.getArtistEvents(artists);
   },
 };

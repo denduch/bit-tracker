@@ -55,13 +55,9 @@ export const communicator = new Communicator();
  * @enum {string}
  */
 export const MessageType = {
-  // Request/response
-  GET_ARTISTS: 'GET_ARTISTS', // Kept for now, might be removed later
-
   // Event-driven
   REQUEST_ARTIST_FETCH: 'REQUEST_ARTIST_FETCH', // Popup -> SW
-  ARTISTS_UPDATED: 'ARTISTS_UPDATED', // SW -> Popup
   REQUEST_EVENTS_FETCH: 'REQUEST_EVENTS_FETCH', // Popup -> SW
-  EVENTS_UPDATED: 'EVENTS_UPDATED', // SW -> Popup
+  DATA_UPDATED: 'DATA_UPDATED',           // SW -> Popup
   EVENTS_LOADING_PROGRESS: 'EVENTS_LOADING_PROGRESS', // SW -> Popup
 };

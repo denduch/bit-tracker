@@ -2,53 +2,52 @@ import { communicator, MessageType } from '../common/messaging.js';
 import { apiProvider } from './api/index.js';
 import { storageManager } from '../common/storage.js';
 
-const ARTIST_CACHE_KEY = 'tracked-artists';
-const EVENT_CACHE_KEY = 'tracked-events';
-/**
- * Fetches the latest artist data from the API, stores it in the cache,
- * and then broadcasts a message to notify all parts of the extension.
- */
-async function fetchAndNotify() {
-  console.log('Starting artist fetch...');
+const DATA_CACHE_KEY = 'tracked-data';
+
+async function combineAndStore(artists, events) {
+  const artistsById = new Map(artists.map(artist => [artist.id, { ...artist, events: [] }]));
+  for (const event of events) {
+    const artist = artistsById.get(event.artist_id);
+    if (artist) {
+      artist.events.push(event);
+    }
+  }
+  const combinedData = Array.from(artistsById.values());
+  await storageManager.set(DATA_CACHE_KEY, combinedData, true);
+  console.log('Successfully combined and cached data.');
+  await communicator.broadcast(MessageType.DATA_UPDATED);
+}
+
+async function fetchArtists() {
   try {
-    const artists = await apiProvider.getTrackedArtists();
-    await storageManager.set(ARTIST_CACHE_KEY, artists, true); // The `true` flag marks it as cacheable data
-    console.log('Successfully fetched and cached artists.');
-    await communicator.broadcast(MessageType.ARTISTS_UPDATED);
+    console.log('Fetching artists...');
+    const newArtists = await apiProvider.getTrackedArtists();
+    const currentData = await storageManager.get(DATA_CACHE_KEY, []);
+    const currentEvents = currentData.flatMap(artist => artist.events || []);
+    await combineAndStore(newArtists, currentEvents);
   } catch (error) {
-    console.error('Failed to fetch and cache artists:', error);
-    // Optionally, broadcast an error message so the UI can react
-    // await communicator.broadcast(MessageType.ARTIST_FETCH_FAILED, { message: error.message });
+    console.error('Failed to fetch artists:', error);
   }
 }
 
-// Listen for a request from the popup to start a fetch operation.
-communicator.on(MessageType.REQUEST_ARTIST_FETCH, (payload, sender) => {
-  console.log('Received REQUEST_ARTIST_FETCH from', sender.tab ? 'tab ' + sender.tab.id : 'popup');
-  fetchAndNotify();
-});
-
-/**
- * Fetches the latest event data from the API, stores it in the cache,
- * and then broadcasts a message to notify all parts of the extension.
- */
-async function fetchEventsAndNotify() {
-  console.log('Starting event fetch...');
+async function fetchEvents() {
   try {
-    const events = await apiProvider.getArtistEvents();
-    await storageManager.set(EVENT_CACHE_KEY, events, true);
-    console.log('Successfully fetched and cached events.');
-    await communicator.broadcast(MessageType.EVENTS_UPDATED);
+    console.log('Fetching events...');
+    const currentData = await storageManager.get(DATA_CACHE_KEY, []);
+    const currentArtists = currentData.map(({ events, ...artist }) => artist);
+
+    if (currentArtists.length === 0) {
+      console.log('No artists in cache, skipping event fetch.');
+      return;
+    }
+    const newEvents = await apiProvider.getArtistEvents(currentArtists);
+    await combineAndStore(currentArtists, newEvents);
   } catch (error) {
-    console.error('Failed to fetch and cache events:', error);
-    // Optionally, broadcast an error message so the UI can react
+    console.error('Failed to fetch events:', error);
   }
 }
 
-// Listen for a request from the popup to start an event fetch operation.
-communicator.on(MessageType.REQUEST_EVENTS_FETCH, (payload, sender) => {
-  console.log('Received REQUEST_EVENTS_FETCH from', sender.tab ? 'tab ' + sender.tab.id : 'popup');
-  fetchEventsAndNotify();
-});
+communicator.on(MessageType.REQUEST_ARTIST_FETCH, fetchArtists);
+communicator.on(MessageType.REQUEST_EVENTS_FETCH, fetchEvents);
 
 console.log('Service worker is listening for messages...');
