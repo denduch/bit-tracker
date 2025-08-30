@@ -45,6 +45,7 @@ class EventsView extends HTMLElement {
 
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="styles/buttons.css">
+            <link rel="stylesheet" href="styles/flags.css">
             <link rel="stylesheet" href="components/events-view.css">
             <div class="container">
                 <div class="panel-header"></div>
@@ -54,8 +55,8 @@ class EventsView extends HTMLElement {
                         <div class="events-list-container">
                             <div class="events-list list-container">
                                 ${filteredEvents.length > 0 ? filteredEvents.map(event => {
-                                    const { country, flag } = getCountryAndFlag(event.location);
-                                    const details = `${country}, ${event.location} ${flag}`;
+                                    const { country, code } = getCountryAndFlag(event.location);
+                                    const details = `${country}, ${event.location}`;
                                     return `
                                     <tile-view class="event-tile"
                                         data-country="${normalizeCountry(country)}"
@@ -63,6 +64,7 @@ class EventsView extends HTMLElement {
                                         image-src="${event.artist.properlySizedArtistImageURL}"
                                         name="${event.artist.name}"
                                         details="${details}"
+                                        country-code="${code}"
                                         date="${event.startsAt}">
                                     </tile-view>
                                 `}).join('') : '<p>No upcoming events found.</p>'}

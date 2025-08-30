@@ -9,7 +9,7 @@ class TileView extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['image-src', 'name', 'details', 'date', 'status-text'];
+        return ['image-src', 'name', 'details', 'date', 'status-text', 'country-code'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -20,11 +20,13 @@ class TileView extends HTMLElement {
         const imageSrc = this.getAttribute('image-src');
         const name = this.getAttribute('name');
         const details = this.getAttribute('details');
+        const countryCode = this.getAttribute('country-code');
         const dateStr = this.getAttribute('date');
         const date = dateStr ? new Date(dateStr) : null;
         const statusText = this.getAttribute('status-text');
 
         this.shadowRoot.innerHTML = `
+            <link rel="stylesheet" href="styles/flags.css">
             <link rel="stylesheet" href="components/tile-view.css">
             <div class="tile">
                 <div class="image">
@@ -32,7 +34,7 @@ class TileView extends HTMLElement {
                 </div>
                 <div class="details">
                     <div class="name">${name}</div>
-                    <div class="sub-details">${details}</div>
+                    <div class="sub-details"><span class="flag ${countryCode}"></span>${details}</div>
                 </div>
                 <div class="status">
                     ${date ? `

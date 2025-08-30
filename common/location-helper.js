@@ -1,39 +1,131 @@
-const usStates = {
-    'AL': 'United States', 'AK': 'United States', 'AZ': 'United States', 'AR': 'United States', 'CA': 'United States', 'CO': 'United States', 'CT': 'United States', 'DE': 'United States', 'FL': 'United States', 'GA': 'United States',
-    'HI': 'United States', 'ID': 'United States', 'IL': 'United States', 'IN': 'United States', 'IA': 'United States', 'KS': 'United States', 'KY': 'United States', 'LA': 'United States', 'ME': 'United States', 'MD': 'United States',
-    'MA': 'United States', 'MI': 'United States', 'MN': 'United States', 'MS': 'United States', 'MO': 'United States', 'MT': 'United States', 'NE': 'United States', 'NV': 'United States', 'NH': 'United States', 'NJ': 'United States',
-    'NM': 'United States', 'NY': 'United States', 'NC': 'United States', 'ND': 'United States', 'OH': 'United States', 'OK': 'United States', 'OR': 'United States', 'PA': 'United States', 'RI': 'United States', 'SC': 'United States',
-    'SD': 'United States', 'TN': 'United States', 'TX': 'United States', 'UT': 'United States', 'VT': 'United States', 'VA': 'United States', 'WA': 'United States', 'WV': 'United States', 'WI': 'United States', 'WY': 'United States',
-    'D.C.': 'United States', 'DC': 'United States', 'Washington D.C.': 'United States'
-};
+const usStates = [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+    'D.C.', 'DC', 'Washington D.C.'
+];
 
-const canadianProvinces = {
-    'AB': 'Canada', 'BC': 'Canada', 'MB': 'Canada', 'NB': 'Canada', 'NL': 'Canada',
-    'NS': 'Canada', 'NT': 'Canada', 'NU': 'Canada', 'ON': 'Canada', 'PE': 'Canada',
-    'QC': 'Canada', 'SK': 'Canada', 'YT': 'Canada'
-};
+const canadianProvinces = [
+    'AB', 'BC', 'MB', 'NB', 'NL',
+    'NS', 'NT', 'NU', 'ON', 'PE',
+    'QC', 'SK', 'YT'
+];
 
 const locationNormalizationMap = {
     'USA': 'United States',
     'UK': 'United Kingdom',
     'Czechia': 'Czech Republic',
+    'South Korea': 'Korea',
+    'UAE': 'United Arab Emirates',
     '日本大阪市': 'Japan',
     '日本江東区': 'Japan',
 };
 
+const countryToCodeMap = {
+    'United States': 'us',
+    'United Kingdom': 'gb',
+    'Canada': 'ca',
+    'Australia': 'au',
+    'Germany': 'de',
+    'France': 'fr',
+    'Spain': 'es',
+    'Ireland': 'ie',
+    'Netherlands': 'nl',
+    'Japan': 'jp',
+    'Korea': 'kr',
+    'United Arab Emirates': 'ae',
+    // European countries
+    'Albania': 'al',
+    'Andorra': 'ad',
+    'Austria': 'at',
+    'Belarus': 'by',
+    'Belgium': 'be',
+    'Bosnia and Herzegovina': 'ba',
+    'Bulgaria': 'bg',
+    'Croatia': 'hr',
+    'Cyprus': 'cy',
+    'Czech Republic': 'cz',
+    'Denmark': 'dk',
+    'Estonia': 'ee',
+    'Finland': 'fi',
+    'Georgia': 'ge',
+    'Greece': 'gr',
+    'Hungary': 'hu',
+    'Iceland': 'is',
+    'Italy': 'it',
+    'Latvia': 'lv',
+    'Liechtenstein': 'li',
+    'Lithuania': 'lt',
+    'Luxembourg': 'lu',
+    'Malta': 'mt',
+    'Moldova': 'md',
+    'Monaco': 'mc',
+    'Montenegro': 'me',
+    'North Macedonia': 'mk',
+    'Norway': 'no',
+    'Poland': 'pl',
+    'Portugal': 'pt',
+    'Romania': 'ro',
+    'Russia': 'ru',
+    'San Marino': 'sm',
+    'Serbia': 'rs',
+    'Slovakia': 'sk',
+    'Slovenia': 'si',
+    'Sweden': 'se',
+    'Switzerland': 'ch',
+    'Turkey': 'tr',
+    'Ukraine': 'ua',
+    'Vatican City': 'va',
+    // World countries
+    'Argentina': 'ar',
+    'Brazil': 'br',
+    'Chile': 'cl',
+    'China': 'cn',
+    'Colombia': 'co',
+    'Costa Rica': 'cr',
+    'Egypt': 'eg',
+    'El Salvador': 'sv',
+    'India': 'in',
+    'Indonesia': 'id',
+    'Israel': 'il',
+    'Kazakhstan': 'kz',
+    'Malaysia': 'my',
+    'Mexico': 'mx',
+    'Morocco': 'ma',
+    'New Zealand': 'nz',
+    'Nigeria': 'ng',
+    'Peru': 'pe',
+    'Philippines': 'ph',
+    'Singapore': 'sg',
+    'South Africa': 'za',
+    'Thailand': 'th',
+    'Venezuela': 've',
+    'Vietnam': 'vn',
+    'Bahrain': 'bh'
+};
+
 function getCountryAndFlag(location) {
     if (!location) {
-        return { country: '', flag: '' };
+        return { country: '', code: '' };
     }
 
     const normalizedCountry = normalizeCountry(location);
-    return { country: normalizedCountry || '', flag: '' };
+    const countryCode = countryToCodeMap[normalizedCountry] || '';
+    return { 
+        country: normalizedCountry || '', 
+        code: countryCode
+    };
 }
 
 const europeanCountries = [
-    'Austria', 'Belgium', 'Croatia', 'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany',
-    'Greece', 'Hungary', 'Ireland', 'Italy', 'Luxembourg', 'Netherlands', 'Norway', 'Poland',
-    'Portugal', 'Romania', 'Spain', 'Sweden', 'Switzerland', 'United Kingdom'
+    'Albania', 'Andorra', 'Austria', 'Belarus', 'Belgium', 'Bosnia and Herzegovina', 'Bulgaria', 'Croatia', 
+    'Cyprus', 'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Georgia', 'Germany',
+    'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Latvia', 'Liechtenstein', 'Lithuania', 
+    'Luxembourg', 'Malta', 'Moldova', 'Monaco', 'Montenegro', 'Netherlands', 'North Macedonia', 
+    'Norway', 'Poland', 'Portugal', 'Romania', 'Russia', 'San Marino', 'Serbia', 'Slovakia', 
+    'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'Turkey', 'Ukraine', 'United Kingdom', 'Vatican City'
 ];
 
 function normalizeCountry(location) {
@@ -45,8 +137,8 @@ function normalizeCountry(location) {
     const parts = trimmedLocation.split(',').map(part => part.trim());
     const lastPart = parts[parts.length - 1];
 
-    if (usStates[lastPart]) return 'United States';
-    if (canadianProvinces[lastPart]) return 'Canada';
+    if (usStates.includes(lastPart)) return 'United States';
+    if (canadianProvinces.includes(lastPart)) return 'Canada';
     if (locationNormalizationMap[lastPart]) return locationNormalizationMap[lastPart];
     if (trimmedLocation.includes('日本')) return 'Japan';
 
