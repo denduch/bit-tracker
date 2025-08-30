@@ -1,16 +1,3 @@
-const countryData = {
-    'United States': { name: 'USA', flag: '🇺🇸' },
-    'United Kingdom': { name: 'UK', flag: '🇬🇧' },
-    'Canada': { name: 'CAN', flag: '🇨🇦' },
-    'Australia': { name: 'AUS', flag: '🇦🇺' },
-    'Germany': { name: 'DE', flag: '🇩🇪' },
-    'France': { name: 'FR', flag: '🇫🇷' },
-    'Spain': { name: 'ES', flag: '🇪🇸' },
-    'Ireland': { name: 'IE', flag: '🇮🇪' },
-    'Netherlands': { name: 'NL', flag: '🇳🇱' },
-    'Japan': { name: 'JP', flag: '🇯🇵' },
-};
-
 const usStates = {
     'AL': 'United States', 'AK': 'United States', 'AZ': 'United States', 'AR': 'United States', 'CA': 'United States', 'CO': 'United States', 'CT': 'United States', 'DE': 'United States', 'FL': 'United States', 'GA': 'United States',
     'HI': 'United States', 'ID': 'United States', 'IL': 'United States', 'IN': 'United States', 'IA': 'United States', 'KS': 'United States', 'KY': 'United States', 'LA': 'United States', 'ME': 'United States', 'MD': 'United States',
@@ -39,21 +26,8 @@ function getCountryAndFlag(location) {
         return { country: '', flag: '' };
     }
 
-    const parts = location.split(',').map(part => part.trim());
-    const lastPart = parts[parts.length - 1];
-
-    if (usStates[lastPart]) {
-        const countryInfo = countryData['United States'];
-        return { country: countryInfo.name, flag: countryInfo.flag };
-    }
-
-    for (const [countryName, data] of Object.entries(countryData)) {
-        if (lastPart === countryName) {
-            return { country: data.name, flag: data.flag };
-        }
-    }
-    
-    return { country: lastPart, flag: '' };
+    const normalizedCountry = normalizeCountry(location);
+    return { country: normalizedCountry || '', flag: '' };
 }
 
 const europeanCountries = [

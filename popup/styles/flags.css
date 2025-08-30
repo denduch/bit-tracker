@@ -1,0 +1,94 @@
+/* Country Flags Sprite Styles */
+.flag {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    vertical-align: text-top;
+    line-height: 16px;
+    background: url(../../assets/flags16.png) no-repeat;
+    margin-left: 4px;
+}
+
+/* All European Countries */
+.ad { background-position: 0 -352px; } /* Andorra */
+.al { background-position: 0 -432px; } /* Albania */
+.at { background-position: 0 -528px; } /* Austria */
+.ba { background-position: 0 -608px; } /* Bosnia and Herzegovina */
+.be { background-position: 0 -656px; } /* Belgium */
+.bg { background-position: 0 -688px; } /* Bulgaria */
+.by { background-position: 0 -864px; } /* Belarus */
+.ch { background-position: 0 -960px; } /* Switzerland */
+.cy { background-position: 0 -1120px; } /* Cyprus */
+.cz { background-position: 0 -1136px; } /* Czech Republic */
+.de { background-position: 0 -1152px; } /* Germany */
+.dk { background-position: 0 -1184px; } /* Denmark */
+.ee { background-position: 0 -1264px; } /* Estonia */
+.es { background-position: 0 -1328px; } /* Spain */
+.fi { background-position: 0 -1360px; } /* Finland */
+.fr { background-position: 0 -1424px; } /* France */
+.gb { background-position: 0 -1456px; } /* United Kingdom */
+.ge { background-position: 0 -1488px; } /* Georgia */
+.gr { background-position: 0 -1632px; } /* Greece */
+.hr { background-position: 0 -1744px; } /* Croatia */
+.hu { background-position: 0 -1776px; } /* Hungary */
+.ie { background-position: 0 -1808px; } /* Ireland */
+.is { background-position: 0 -1904px; } /* Iceland */
+.it { background-position: 0 -1920px; } /* Italy */
+.li { background-position: 0 -2224px; } /* Liechtenstein */
+.lt { background-position: 0 -2288px; } /* Lithuania */
+.lu { background-position: 0 -2304px; } /* Luxembourg */
+.lv { background-position: 0 -2320px; } /* Latvia */
+.mc { background-position: 0 -1792px; } /* Monaco */
+.md { background-position: 0 -2368px; } /* Moldova */
+.me { background-position: 0 -2384px; } /* Montenegro */
+.mk { background-position: 0 -2432px; } /* North Macedonia */
+.mt { background-position: 0 -2560px; } /* Malta */
+.nl { background-position: 0 -2752px; } /* Netherlands */
+.no { background-position: 0 -2768px; } /* Norway */
+.pl { background-position: 0 -2944px; } /* Poland */
+.pt { background-position: 0 -2992px; } /* Portugal */
+.ro { background-position: 0 -3072px; } /* Romania */
+.rs { background-position: 0 -3088px; } /* Serbia */
+.ru { background-position: 0 -3104px; } /* Russia */
+.se { background-position: 0 -3200px; } /* Sweden */
+.si { background-position: 0 -3232px; } /* Slovenia */
+.sk { background-position: 0 -3248px; } /* Slovakia */
+.sm { background-position: 0 -3280px; } /* San Marino */
+.tr { background-position: 0 -3552px; } /* Turkey */
+.ua { background-position: 0 -3632px; } /* Ukraine */
+.va { background-position: 0 -3712px; } /* Vatican City */
+
+/* Major World Countries */
+.ar { background-position: 0 -496px; } /* Argentina */
+.au { background-position: 0 -544px; } /* Australia */
+.br { background-position: 0 -800px; } /* Brazil */
+.ca { background-position: 0 -896px; } /* Canada */
+.cl { background-position: 0 -1008px; } /* Chile */
+.cn { background-position: 0 -1040px; } /* China */
+.co { background-position: 0 -1056px; } /* Colombia */
+.eg { background-position: 0 -1280px; } /* Egypt */
+.id { background-position: 0 -1792px; } /* Indonesia */
+.il { background-position: 0 -1824px; } /* Israel */
+.in { background-position: 0 -1856px; } /* India */
+.jp { background-position: 0 -1984px; } /* Japan */
+.kr { background-position: 0 -2112px; } /* South Korea */
+.mx { background-position: 0 -2624px; } /* Mexico */
+.my { background-position: 0 -2640px; } /* Malaysia */
+.ng { background-position: 0 -2720px; } /* Nigeria */
+.nz { background-position: 0 -2816px; } /* New Zealand */
+.pe { background-position: 0 -2864px; } /* Peru */
+.ph { background-position: 0 -2912px; } /* Philippines */
+.sg { background-position: 0 -3216px; } /* Singapore */
+.th { background-position: 0 -3456px; } /* Thailand */
+.us { background-position: 0 -3664px; } /* United States */
+.ve { background-position: 0 -3744px; } /* Venezuela */
+.vn { background-position: 0 -3792px; } /* Vietnam */
+.za { background-position: 0 -3856px; } /* South Africa */
+
+/* Additional countries from Bandsintown data */
+.ae { background-position: 0 -368px; } /* United Arab Emirates */
+.bh { background-position: 0 -704px; } /* Bahrain */
+.cr { background-position: 0 -1072px; } /* Costa Rica */
+.kz { background-position: 0 -2160px; } /* Kazakhstan */
+.ma { background-position: 0 -2352px; } /* Morocco */
+.sv { background-position: 0 -3360px; } /* El Salvador */
