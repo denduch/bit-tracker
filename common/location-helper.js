@@ -231,4 +231,12 @@ const getDateFilterGroups = () => {
     }];
 };
 
+const europeanCountryCodes = new Set([
+    'al', 'ad', 'at', 'by', 'be', 'ba', 'bg', 'hr', 'cy', 'cz', 'dk', 'ee', 'fo', 'fi', 'fr', 'de', 'gi', 'gr', 'gg', 'hu', 'is', 'ie', 'im', 'it', 'je', 'lv', 'li', 'lt', 'lu', 'mk', 'mt', 'md', 'mc', 'me', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sm', 'rs', 'sk', 'si', 'es', 'sj', 'se', 'ch', 'ua', 'gb', 'va', 'eu'
+]);
+
+export function isCountryInEurope(countryCode) {
+    return europeanCountryCodes.has(countryCode?.toLowerCase());
+}
+
 export { getCountryAndFlag, getCountryFilterGroups, europeanCountries, usStates, normalizeCountry, getDateFilterGroups };

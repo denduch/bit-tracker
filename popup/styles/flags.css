@@ -10,6 +10,7 @@
 }
 
 /* All European Countries */
+.eu { background-position: 0 -128px; } /* European Union */
 .ad { background-position: 0 -352px; } /* Andorra */
 .al { background-position: 0 -432px; } /* Albania */
 .at { background-position: 0 -528px; } /* Austria */

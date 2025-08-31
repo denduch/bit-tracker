@@ -34,7 +34,10 @@ class TileView extends HTMLElement {
                 </div>
                 <div class="details">
                     <div class="name">${name}</div>
-                    <div class="sub-details"><span class="flag ${countryCode}"></span>${details}</div>
+                    <div class="sub-details">
+                        ${countryCode ? `<span class="flag ${countryCode}"></span>` : ''}
+                        ${details}
+                    </div>
                 </div>
                 <div class="status">
                     ${date ? `

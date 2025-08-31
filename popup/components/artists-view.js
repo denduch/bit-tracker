@@ -1,4 +1,5 @@
 import { store } from '../store.js';
+import { getCountryAndFlag, isCountryInEurope } from '../../common/location-helper.js';
 import { communicator, MessageType } from '../../common/messaging.js';
 import './tile-view.js';
 
@@ -35,14 +36,25 @@ class ArtistsView extends HTMLElement {
                 ${isLoading ? '<p>Loading artists...</p>' : `
                     ${artists.length > 0 ? `
                         <div class="artist-list list-container">
-                            ${artists.map(artist => `
+                            ${artists.map(artist => {
+                                const eventCountryCodes = artist.events?.map(event => getCountryAndFlag(event.location).code) || [];
+                                let displayCountryCode = '';
+                                if (eventCountryCodes.includes('pl')) {
+                                    displayCountryCode = 'pl';
+                                } else if (eventCountryCodes.some(code => isCountryInEurope(code))) {
+                                    displayCountryCode = 'eu';
+                                }
+
+                                return `
                                 <tile-view 
                                     image-src="${artist.properlySizedArtistImageURL}"
                                     name="${artist.name}"
                                     details="${artist.events?.length || 0} events"
-                                    status-text="${artist.on_tour ? 'ON TOUR' : ''}">
+                                    status-text="${artist.on_tour ? 'ON TOUR' : ''}"
+                                    country-code="${displayCountryCode}">
                                 </tile-view>
-                            `).join('')}
+                                `;
+                            }).join('')}
                         </div>
                     ` : '<p>No artists found. Add artists on Bandsintown.</p>'}
                 `}
