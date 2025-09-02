@@ -1,6 +1,7 @@
 import { parseEventsFromHTML } from './parser.js';
 import { communicator, MessageType } from '../../common/messaging.js';
 const BANDSINTOWN_ARTISTS_URL = 'https://www.bandsintown.com/u/trackedArtists?max=10000';
+const BANDSINTOWN_RECOMMENDATIONS_URL = 'https://www.bandsintown.com/searchArtists?searchTerm&genres=recommended';
 
 async function getTrackedArtists() {
   console.log('Fetching artists from Bandsintown...');
@@ -11,6 +12,20 @@ async function getTrackedArtists() {
   });
   if (!response.ok) {
     throw new Error(`Failed to fetch tracked artists: ${response.statusText}`);
+  }
+  const { artists } = await response.json();
+  return artists;
+}
+
+async function getRecommendations() {
+  console.log('Fetching recommendations from Bandsintown...');
+  const response = await fetch(BANDSINTOWN_RECOMMENDATIONS_URL, {
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch recommendations: ${response.statusText}`);
   }
   const { artists } = await response.json();
   return artists;
@@ -67,4 +82,5 @@ async function getArtistEvents(artists) {
 export const liveProvider = {
   getTrackedArtists,
   getArtistEvents,
+  getRecommendations,
 };

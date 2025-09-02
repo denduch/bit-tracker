@@ -5,6 +5,7 @@ import { storageManager } from '../common/storage.js';
 const DATA_CACHE_KEY = 'tracked-data';
 const ARTISTS_LAST_FETCHED_KEY = 'artists-last-fetched';
 const FETCH_ALARM_NAME = 'fetch-data-alarm';
+const RECOMMENDATIONS_CACHE_KEY = 'recommendations-data';
 
 async function combineAndStore(newArtists) {
   const oldArtists = await storageManager.get(DATA_CACHE_KEY, []);
@@ -103,7 +104,22 @@ async function fetchEvents() {
 }
 
 communicator.on(MessageType.REQUEST_ARTIST_FETCH, () => fetchArtists(true));
+async function fetchRecommendations() {
+  try {
+    console.log('Fetching recommendations...');
+    const recommendations = await apiProvider.getRecommendations();
+    await storageManager.set(RECOMMENDATIONS_CACHE_KEY, recommendations, true);
+    console.log('Successfully cached recommendations.');
+    await communicator.broadcast(MessageType.DATA_UPDATED);
+  } catch (error) {
+    console.error('Failed to fetch recommendations:', error);
+    await communicator.broadcast(MessageType.DATA_UPDATED); // Ensure UI resets loading state
+  }
+}
+
+communicator.on(MessageType.REQUEST_ARTIST_FETCH, () => fetchArtists(true));
 communicator.on(MessageType.REQUEST_EVENTS_FETCH, fetchEvents);
+communicator.on(MessageType.REQUEST_RECOMMENDATIONS_FETCH, fetchRecommendations);
 
 // Alarms for periodic fetching
 chrome.runtime.onInstalled.addListener(() => {

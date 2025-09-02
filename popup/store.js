@@ -34,7 +34,9 @@ class Store {
 
 const initialState = {
   artists: [],
+  recommendations: [],
   isLoading: true,
+  isLoadingRecommendations: true,
   eventsLoadingProgress: { current: 0, total: 0 },
   activeFilters: { country: 'everywhere', date: 'anytime', artist: 'all' },
 };
@@ -44,8 +46,9 @@ export const store = new Store(initialState);
 async function loadInitialData() {
   store.setState({ isLoading: true });
   try {
-    const [artists, oldActiveFilter, activeFilters] = await Promise.all([
+    const [artists, recommendations, oldActiveFilter, activeFilters] = await Promise.all([
       storageManager.get('tracked-data', []),
+      storageManager.get('recommendations-data', []),
       storageManager.get('activeEventFilter', null), // For migration
       storageManager.get('activeFilters', { country: 'everywhere', date: 'anytime', artist: 'all' })
     ]);
@@ -58,8 +61,10 @@ async function loadInitialData() {
 
     store.setState({
       artists,
+      recommendations,
       activeFilters,
-      isLoading: false
+      isLoading: false,
+      isLoadingRecommendations: false
     });
   } catch (error) {
     console.error('Failed to load initial data:', error);
@@ -70,8 +75,17 @@ async function loadInitialData() {
 // Listen for updates from the service worker
 communicator.on(MessageType.DATA_UPDATED, async () => {
   console.log('Store received DATA_UPDATED');
-  const artists = await storageManager.get('tracked-data') || [];
-  store.setState({ artists, isLoading: false, eventsLoadingProgress: { current: 0, total: 0 } });
+  const [artists, recommendations] = await Promise.all([
+    storageManager.get('tracked-data', []),
+    storageManager.get('recommendations-data', [])
+  ]);
+  store.setState({ 
+    artists, 
+    recommendations,
+    isLoading: false, 
+    isLoadingRecommendations: false,
+    eventsLoadingProgress: { current: 0, total: 0 } 
+  });
 });
 
 communicator.on(MessageType.EVENTS_LOADING_PROGRESS, (progress) => {

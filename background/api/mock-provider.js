@@ -23,6 +23,17 @@ async function getEventsForArtist(artist) {
   return events.map(event => ({ ...event, artist_id: artist.id }));
 }
 
+async function getRecommendations() {
+  console.log('Fetching recommendations from mock JSON file...');
+  const response = await fetch('../mocks/recommendations.json');
+  if (!response.ok) {
+    throw new Error(`Failed to fetch mock recommendations: ${response.statusText}`);
+  }
+  const data = await response.json();
+  console.log('Mock recommendations:', data.artists)
+  return data.artists;
+}
+
 async function getArtistEvents(artists) {
   console.log('Fetching mock events...');
   let allEvents = [];
@@ -39,4 +50,5 @@ async function getArtistEvents(artists) {
 export const mockProvider = {
   getTrackedArtists,
   getArtistEvents,
+  getRecommendations,
 };

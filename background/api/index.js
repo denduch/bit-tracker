@@ -18,4 +18,8 @@ export const apiProvider = {
     const provider = await getProvider();
     return provider.getArtistEvents(artists);
   },
+  async getRecommendations() {
+    const provider = await getProvider();
+    return provider.getRecommendations();
+  },
 };
