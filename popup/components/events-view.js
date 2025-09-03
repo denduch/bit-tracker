@@ -65,6 +65,7 @@ class EventsView extends HTMLElement {
                                     <tile-view class="event-tile"
                                         data-country="${normalizeCountry(country)}"
                                         data-name="${event.artist.name}"
+                                        type="events"
                                         image-src="${event.artist.properlySizedArtistImageURL}"
                                         name="${event.artist.name}"
                                         details="${details}"

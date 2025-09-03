@@ -35,6 +35,7 @@ class Store {
 const initialState = {
   artists: [],
   recommendations: [],
+  csrfToken: null,
   isLoading: true,
   isLoadingRecommendations: true,
   eventsLoadingProgress: { current: 0, total: 0 },
@@ -91,6 +92,11 @@ communicator.on(MessageType.DATA_UPDATED, async () => {
 communicator.on(MessageType.EVENTS_LOADING_PROGRESS, (progress) => {
   console.log('Store received EVENTS_LOADING_PROGRESS', progress);
   store.setState({ eventsLoadingProgress: progress });
+});
+
+communicator.on(MessageType.CSRF_TOKEN_UPDATED, ({ token }) => {
+  console.log('Store received CSRF_TOKEN_UPDATED', token);
+  store.setState({ csrfToken: token });
 });
 
 // Initial data load when the popup opens

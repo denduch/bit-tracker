@@ -121,6 +121,33 @@ communicator.on(MessageType.REQUEST_ARTIST_FETCH, () => fetchArtists(true));
 communicator.on(MessageType.REQUEST_EVENTS_FETCH, fetchEvents);
 communicator.on(MessageType.REQUEST_RECOMMENDATIONS_FETCH, fetchRecommendations);
 
+communicator.on(MessageType.REQUEST_CSRF_TOKEN_FETCH, async () => {
+  try {
+    console.log('Fetching CSRF token...');
+    const token = await apiProvider.getCsrfToken();
+    console.log('CSRF token fetched:', token);
+    await storageManager.set('csrf-token', token);
+    await communicator.broadcast(MessageType.CSRF_TOKEN_UPDATED, { token });
+  } catch (error) {
+    console.error('Failed to fetch CSRF token:', error);
+  }
+});
+
+communicator.on(MessageType.SET_ARTIST_TRACKING_STATUS, async ({ artistId, track }) => {
+  try {
+    const csrfToken = await storageManager.get('csrf-token');
+    if (!csrfToken) {
+      throw new Error('CSRF token not found. Please fetch it first.');
+    }
+    await apiProvider.setArtistTrackingStatus(artistId, track, csrfToken);
+    // After tracking status changes, re-fetch artists to update the UI state
+    // await fetchArtists(true);
+  } catch (error) {
+    console.error(`Failed to set tracking status for artist ${artistId}:`, error);
+    // Optionally, notify the UI of the failure
+  }
+});
+
 // Alarms for periodic fetching
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Extension installed, creating alarm.');

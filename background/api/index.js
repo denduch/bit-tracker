@@ -22,4 +22,12 @@ export const apiProvider = {
     const provider = await getProvider();
     return provider.getRecommendations();
   },
+  async setArtistTrackingStatus(artistId, track, csrfToken) {
+    const provider = await getProvider();
+    return provider.setArtistTrackingStatus(artistId, track, csrfToken);
+  },
+  async getCsrfToken() {
+    const provider = await getProvider();
+    return provider.getCsrfToken();
+  },
 };

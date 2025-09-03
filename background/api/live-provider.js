@@ -44,6 +44,42 @@ async function getEventsForArtist(artist) {
   return events.map(event => ({ ...event, artist_id: artist.id }));
 }
 
+async function setArtistTrackingStatus(artistId, track, csrfToken) {
+  const action = track ? 'track' : 'untrack';
+  console.log(`${action.toUpperCase()}ING artist ${artistId}...`);
+  const url = `https://www.bandsintown.com/a/${artistId}/track`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify({ artistTrackingAction: action }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to ${action} artist: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+async function getCsrfToken() {
+  const url = 'https://www.bandsintown.com/u/explore';
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch explore page for CSRF token: ${response.statusText}`);
+  }
+  const html = await response.text();
+  const match = html.match(/CSRFTOKEN='([^']+)';/);
+  if (match && match[1]) {
+    return match[1];
+  }
+  throw new Error('CSRF token not found on explore page.');
+}
+
 async function getArtistEvents(artists) {
   console.log('Fetching events from Bandsintown...');
   let allEvents = [];
@@ -83,4 +119,6 @@ export const liveProvider = {
   getTrackedArtists,
   getArtistEvents,
   getRecommendations,
+  setArtistTrackingStatus,
+  getCsrfToken,
 };

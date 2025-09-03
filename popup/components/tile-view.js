@@ -1,3 +1,6 @@
+import { communicator, MessageType } from '../../common/messaging.js';
+import { store } from '../store.js';
+
 class TileView extends HTMLElement {
     constructor() {
         super();
@@ -9,11 +12,14 @@ class TileView extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['image-src', 'name', 'details', 'date', 'status-text', 'country-code'];
+        return ['image-src', 'name', 'details', 'date', 'status-text', 'country-code', 'artist-id', 'is-tracked'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        this.render();
+        // Re-render only if it's not a tracking status change from within
+        if (name !== 'is-tracked' || oldValue === null) {
+            this.render();
+        }
     }
 
     render() {
@@ -21,9 +27,13 @@ class TileView extends HTMLElement {
         const name = this.getAttribute('name');
         const details = this.getAttribute('details');
         const countryCode = this.getAttribute('country-code');
+        const type = this.getAttribute('type');
         const dateStr = this.getAttribute('date');
         const date = dateStr ? new Date(dateStr) : null;
         const statusText = this.getAttribute('status-text');
+        const artistId = this.getAttribute('artist-id');
+        const isTracked = this.getAttribute('is-tracked') === 'true';
+        console.log('artistId', {artistId, isTracked});
 
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="styles/flags.css">
@@ -40,7 +50,7 @@ class TileView extends HTMLElement {
                     </div>
                 </div>
                 <div class="status">
-                    ${date ? `
+                    ${type === 'events' ? `
                         <div class="date-display">
                             <div>
                                 <span class="day">${date.getDate()}</span>
@@ -49,10 +59,36 @@ class TileView extends HTMLElement {
                             <div class="year">${date.getFullYear()}</div>
                         </div>
                     ` : ''}
-                    ${statusText ? `<div class="status-badge">${statusText}</div>` : ''}
+                    ${type === 'artists' ? `<div class="status-badge">${statusText}</div>` : ''}
+                    ${type === 'discover' ? `<button id="follow-button" class="follow-button ${isTracked ? 'tracked' : ''}">${isTracked ? 'Following' : 'Follow'}</button>` : ''}
                 </div>
             </div>
         `;
+
+        this.addEventListeners();
+    }
+
+    addEventListeners() {
+        const followButton = this.shadowRoot.getElementById('follow-button');
+        if (followButton) {
+            followButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const artistId = this.getAttribute('artist-id');
+                const isTracked = this.getAttribute('is-tracked') === 'true';
+                const newTrackedStatus = !isTracked;
+
+                // Optimistically update UI
+                this.setAttribute('is-tracked', newTrackedStatus.toString());
+                followButton.textContent = newTrackedStatus ? 'Following' : 'Follow';
+                followButton.classList.toggle('tracked', newTrackedStatus);
+
+                communicator.broadcast(MessageType.SET_ARTIST_TRACKING_STATUS, {
+                    artistId,
+                    track: newTrackedStatus,
+                    csrfToken: store.csrfToken,
+                });
+            });
+        }
     }
 
     getRomanMonth(monthIndex) {
@@ -60,4 +96,5 @@ class TileView extends HTMLElement {
         return romanMonths[monthIndex];
     }
 }
+
 window.customElements.define('tile-view', TileView);

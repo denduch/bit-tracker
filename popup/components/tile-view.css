@@ -1,3 +1,27 @@
+.follow-button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--color-background-tertiary);
+    border: 1px solid var(--color-black);
+    color: var(--color-text-primary);
+    border-radius: var(--border-radius-s);
+    padding: 8px 16px;
+    font-size: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s ease-out;
+}
+
+.follow-button:hover {
+    background: var(--color-background-secondary-hover);
+}
+
+.follow-button.tracked {
+    background: var(--gradient-accent);
+    color: var(--color-white);
+}
+
 .tile {
     display: flex;
     align-items: center;
@@ -9,7 +33,6 @@
     align-items: start;
     box-shadow: var(--shadow-main);
     transition: all 0.2s ease-out;
-    cursor: pointer;
     width: 100%;
 
     &:hover {

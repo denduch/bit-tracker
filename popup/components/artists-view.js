@@ -49,6 +49,7 @@ class ArtistsView extends HTMLElement {
                                 <tile-view 
                                     image-src="${artist.properlySizedArtistImageURL}"
                                     name="${artist.name}"
+                                    type="artists"
                                     details="${artist.events?.length || 0} events"
                                     status-text="${artist.on_tour ? 'ON TOUR' : ''}"
                                     country-code="${displayCountryCode}">
