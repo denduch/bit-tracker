@@ -81,6 +81,27 @@ class FilterView extends HTMLElement {
         });
     }
 
+    updateFilterGroups(group, selectedFilters) {
+        const updatedGroup = this.shadowRoot.querySelector(`[data-group-id="${group}"]`);
+        const filters = updatedGroup.querySelectorAll('.filter-option');
+
+        filters.forEach(filter => {
+            const value = filter.dataset.value;
+            const isArtistFiltered = !selectedFilters.includes(value);
+            const isDefaultOption = value === 'all';
+            filter.classList.toggle('hidden', isArtistFiltered && !isDefaultOption);
+        });
+
+        const hasVisibleActiveFilter = [...filters].some(filter => filter.classList.contains('active') && !filter.classList.contains('hidden'));
+        if (!hasVisibleActiveFilter) {
+            const defaultOption = updatedGroup.querySelector('[data-default]');
+            updatedGroup.querySelector('.active').classList.remove('active');
+            defaultOption.classList.add('active');
+            this._activeFilters[group] = defaultOption.dataset.value;
+            this.dispatchEvent(new CustomEvent('filter-changed', { detail: { filter: defaultOption.dataset.value, group } }));
+        }
+    }
+
     updateActiveState() {
         this.shadowRoot.querySelectorAll('.filter-option').forEach(option => {
             const value = option.dataset.value;
@@ -115,7 +136,7 @@ class FilterView extends HTMLElement {
                         ${group.label ? `<div class="group-label">${group.label}</div>` : ''}
                         <div class="options-wrapper">
                             ${group.options.map(option => `
-                                <div class="filter-option" data-value="${option.value}" data-group="${option.group}" ${option.default ? 'data-default' : ''}>
+                                <div class="filter-option ${option.hidden ? 'hidden' : ''}" data-value="${option.value}" data-group="${option.group}" ${option.default ? 'data-default' : ''}>
                                     ${option.label}
                                 </div>
                             `).join('')}

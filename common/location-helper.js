@@ -201,12 +201,13 @@ function getCountryFilterGroups(events) {
     }];
 }
 
-export const getArtistFilterGroups = (events) => {
-        const artists = [...new Set(events.map(event => event.artist.name))].sort();
+export const getArtistFilterGroups = (events, eventsFilteredByCountryAndDate) => {
+    console.log('eventsFilteredByCountryAndDate', eventsFilteredByCountryAndDate);
+    const artists = [...new Set(events.map(event => event.artist.name))].sort();
 
     const artistOptions = [
         { value: 'all', label: 'All artists', default: true },
-        ...artists.map(artist => ({ value: artist, label: artist }))
+        ...artists.map(artist => ({ value: artist, label: artist, hidden: !eventsFilteredByCountryAndDate.some(event => event.artist.name === artist) }))
     ].map(option => ({ ...option, group: 'artist' }));
 
     return [{

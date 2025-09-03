@@ -83,6 +83,10 @@
     border: 1px solid;
 }
 
+.filter-option.hidden {
+    display: none;
+}
+
 .filter-option:hover {
     background: var(--color-background-secondary-hover);
 }

@@ -41,7 +41,8 @@ class EventsView extends HTMLElement {
         const countryFilterGroups = getCountryFilterGroups(sortedEvents);
         const dateFilterGroups = getDateFilterGroups();
         // Artist filter options should only depend on country and date filters, not artist selection
-        const artistFilterGroups = getArtistFilterGroups(eventsFilteredByCountryAndDate);
+        console.log('aaaaa', sortedEvents, eventsFilteredByCountryAndDate);
+        const artistFilterGroups = getArtistFilterGroups(sortedEvents, eventsFilteredByCountryAndDate);
 
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="styles/buttons.css">
@@ -92,7 +93,6 @@ class EventsView extends HTMLElement {
     }
 
     updateEventList() {
-
         const { artists, activeFilters } = store.getState();
         const eventsList = this.shadowRoot.querySelectorAll('.events-list .event-tile');
 
@@ -102,13 +102,17 @@ class EventsView extends HTMLElement {
 
         const sortedEvents = allEvents.sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt));
 
-        const filteredEvents = sortedEvents.filter(event => {
+        const eventsFilteredByCountryAndDate = sortedEvents.filter(event => {
             const { country } = getCountryAndFlag(event.location);
             const countryMatch = this.isEventFilteredByCountry(normalizeCountry(country), activeFilters.country);
             const dateMatch = !this.isEventFilteredByDate(event, activeFilters.date);
-            const artistMatch = activeFilters.artist === 'all' || event.artist.name === activeFilters.artist;
-            return countryMatch && dateMatch && artistMatch;
+            return countryMatch && dateMatch;
         });
+
+        // Apply artist filter on top of country/date filtering
+        const filteredEvents = activeFilters.artist === 'all'
+            ? eventsFilteredByCountryAndDate
+            : eventsFilteredByCountryAndDate.filter(event => event.artist.name === activeFilters.artist);
 
         const filteredEventsIds = filteredEvents.map(event => event.id);
 
@@ -122,6 +126,13 @@ class EventsView extends HTMLElement {
         });
 
         this.updateHeader(filteredEventsIds.length);
+        this.updateArtistFilterGroups(eventsFilteredByCountryAndDate);
+    }
+
+    updateArtistFilterGroups(eventsFilteredByCountryAndDate) {
+        const simplifiedFilteredArtists = [...new Set(eventsFilteredByCountryAndDate.map(event => event.artist.name))];
+        console.log('simplifiedFilteredArtists', simplifiedFilteredArtists);
+        this.shadowRoot.querySelector('filter-view').updateFilterGroups('artist', simplifiedFilteredArtists);
     }
 
     updateFilterView(filterGroups, activeFilters) {
@@ -205,6 +216,7 @@ class EventsView extends HTMLElement {
 
                 store.setState({ activeFilters: newFilters });
                 this.updateEventList();
+
             });
             filterView.dataset.listenerAttached = 'true';
         }
