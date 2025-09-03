@@ -11,7 +11,6 @@ class FilterView extends HTMLElement {
 
     set config(newConfig) {
         this._config = newConfig;
-        this.render();
     }
 
     set activeFilters(newValues) {
@@ -28,6 +27,7 @@ class FilterView extends HTMLElement {
         this.shadowRoot.addEventListener('click', async (e) => {
             const filterOption = e.target.closest('.filter-option');
             if (filterOption && this._config) {
+                const defaultOption = filterOption.parentNode.querySelector('[data-default]');
                 const value = filterOption.dataset.value;
                 const group = filterOption.dataset.group;
 
@@ -47,8 +47,15 @@ class FilterView extends HTMLElement {
                 }
 
                 if (this._activeFilters[filterType] === value) {
+                    filterOption.classList.remove('active');
+                    defaultOption.classList.add('active');
+                    this._activeFilters[filterType] = defaultValue;
                     this.dispatchEvent(new CustomEvent('filter-changed', { detail: { filter: defaultValue, group: filterType } }));
                 } else {
+                    const activeSibling = filterOption.parentNode.querySelector('.active');
+                    activeSibling.classList.remove('active');
+                    filterOption.classList.add('active');
+                    this._activeFilters[filterType] = value;
                     this.dispatchEvent(new CustomEvent('filter-changed', { detail: { filter: value, group: filterType } }));
                 }
                 return;
@@ -103,11 +110,12 @@ class FilterView extends HTMLElement {
                     <div 
                         class="filter-group ${collapsedGroups.includes(group.label) ? 'collapsed' : ''}"
                         data-group-name="${group.label}"
+                        data-group-id="${group.group}"
                     >
                         ${group.label ? `<div class="group-label">${group.label}</div>` : ''}
                         <div class="options-wrapper">
                             ${group.options.map(option => `
-                                <div class="filter-option" data-value="${option.value}" data-group="${option.group}">
+                                <div class="filter-option" data-value="${option.value}" data-group="${option.group}" ${option.default ? 'data-default' : ''}>
                                     ${option.label}
                                 </div>
                             `).join('')}

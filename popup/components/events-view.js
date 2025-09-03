@@ -8,20 +8,14 @@ class EventsView extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.handleStoreUpdate = this.render.bind(this);
     }
 
     connectedCallback() {
-        this.render(store.getState());
-        store.subscribe(this.handleStoreUpdate);
+        this.render();
     }
 
-    disconnectedCallback() {
-        store.unsubscribe(this.handleStoreUpdate);
-    }
-
-    render(state) {
-        const { artists, activeFilters, isLoading, eventsLoadingProgress, collapsedEventFilterGroups } = state;
+    render() {
+        const { artists, activeFilters, collapsedEventFilterGroups } = store.getState();
 
         const allEvents = artists.flatMap(artist => 
             (artist.events || []).map(event => ({ ...event, artist }))
@@ -41,6 +35,8 @@ class EventsView extends HTMLElement {
         const filteredEvents = activeFilters.artist === 'all'
             ? eventsFilteredByCountryAndDate
             : eventsFilteredByCountryAndDate.filter(event => event.artist.name === activeFilters.artist);
+        
+        const filteredEventsIds = filteredEvents.map(event => event.id);
 
         const countryFilterGroups = getCountryFilterGroups(sortedEvents);
         const dateFilterGroups = getDateFilterGroups();
@@ -54,16 +50,16 @@ class EventsView extends HTMLElement {
             <div class="container">
                 <div class="panel-header"></div>
                 <div class="content">
-                    ${(isLoading && sortedEvents.length === 0) ? '<p>Loading events...</p>' : `
-                        <filter-view></filter-view>
-                        <div class="events-list-container">
-                            <div class="events-list list-container">
-                                ${filteredEvents.length > 0 ? filteredEvents.map(event => {
+                    <filter-view></filter-view>
+                    <div class="events-list-container">
+                        <div class="events-list list-container">
+                            ${filteredEvents.length > 0 ? sortedEvents.map(event => {
                                     const { country, code, cleanLocation } = getCountryAndFlag(event.location);
                                     const details = `${country}, ${cleanLocation}`;
                                     return `
-                                    <tile-view class="event-tile"
+                                    <tile-view class="event-tile ${filteredEventsIds.includes(event.id) ? '' : 'hidden'}"
                                         data-country="${normalizeCountry(country)}"
+                                        data-id="${event.id}"
                                         data-name="${event.artist.name}"
                                         type="events"
                                         image-src="${event.artist.properlySizedArtistImageURL}"
@@ -75,28 +71,57 @@ class EventsView extends HTMLElement {
                                 `}).join('') : '<p>No upcoming events found.</p>'}
                             </div>
                         </div>
-                    `}
+                    </div>
                 </div>
             </div>
         `;
 
-        this.updateHeader(filteredEvents.length, isLoading, eventsLoadingProgress);
+        this.updateHeader(filteredEvents.length);
         this.updateFilterView([...countryFilterGroups, ...dateFilterGroups, ...artistFilterGroups], activeFilters, collapsedEventFilterGroups);
         this.attachEventListeners();
     }
 
-    updateHeader(visibleEventsCount, isLoading, eventsLoadingProgress) {
+    updateHeader(visibleEventsCount) {
         const header = this.shadowRoot.querySelector('.panel-header');
         if (!header) return;
 
         header.innerHTML = `
-            <h2>${visibleEventsCount} Events</h2>
-            ${(isLoading && eventsLoadingProgress.total > 0)
-                ? `<div class="loading-progress">${eventsLoadingProgress.current}/${eventsLoadingProgress.total}</div>
-                <button id="refresh-button" class="button primary refresh-events-button refresh-button ${isLoading ? 'loading' : ''}" title="Refresh event list">&#x21bb;</button>`
-                : `<button id="refresh-button" class="button primary refresh-events-button refresh-button ${isLoading ? 'loading' : ''}" title="Refresh event list">&#x21bb;</button>`
-            }
+            <h2><span class="count">${visibleEventsCount}</span> Events</h2>
+            <button id="refresh-button" class="button primary refresh-events-button refresh-button" title="Refresh event list">&#x21bb;</button>
         `;
+    }
+
+    updateEventList() {
+
+        const { artists, activeFilters } = store.getState();
+        const eventsList = this.shadowRoot.querySelectorAll('.events-list .event-tile');
+
+        const allEvents = artists.flatMap(artist => 
+            (artist.events || []).map(event => ({ ...event, artist }))
+        );
+
+        const sortedEvents = allEvents.sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt));
+
+        const filteredEvents = sortedEvents.filter(event => {
+            const { country } = getCountryAndFlag(event.location);
+            const countryMatch = this.isEventFilteredByCountry(normalizeCountry(country), activeFilters.country);
+            const dateMatch = !this.isEventFilteredByDate(event, activeFilters.date);
+            const artistMatch = activeFilters.artist === 'all' || event.artist.name === activeFilters.artist;
+            return countryMatch && dateMatch && artistMatch;
+        });
+
+        const filteredEventsIds = filteredEvents.map(event => event.id);
+
+        eventsList.forEach(event => {
+            const eventId = parseInt(event.dataset.id);
+            if(filteredEventsIds.includes(eventId)) {
+                event.classList.remove('hidden');
+            } else {
+                event.classList.add('hidden');
+            }
+        });
+
+        this.updateHeader(filteredEventsIds.length);
     }
 
     updateFilterView(filterGroups, activeFilters) {
@@ -162,7 +187,6 @@ class EventsView extends HTMLElement {
         const refreshButton = this.shadowRoot.getElementById('refresh-button');
         if (refreshButton && !refreshButton.dataset.listenerAttached) {
             refreshButton.addEventListener('click', () => {
-                store.setState({ isLoading: true, eventsLoadingProgress: { current: 0, total: 0 } });
                 communicator.broadcast(MessageType.REQUEST_EVENTS_FETCH);
             });
             refreshButton.dataset.listenerAttached = 'true';
@@ -180,6 +204,7 @@ class EventsView extends HTMLElement {
                 }
 
                 store.setState({ activeFilters: newFilters });
+                this.updateEventList();
             });
             filterView.dataset.listenerAttached = 'true';
         }

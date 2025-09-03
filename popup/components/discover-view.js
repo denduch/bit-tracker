@@ -6,16 +6,10 @@ class DiscoverView extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.handleStoreUpdate = this.render.bind(this);
     }
 
     connectedCallback() {
-        store.subscribe(this.handleStoreUpdate);
-        this.render(); // Initial render
-    }
-
-    disconnectedCallback() {
-        store.unsubscribe(this.handleStoreUpdate);
+        this.render();
     }
 
     render() {

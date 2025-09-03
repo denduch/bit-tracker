@@ -1,3 +1,6 @@
 @import url('../styles/shared.css');
 
+.event-tile.hidden {
+    display: none;
+}
 /* Component-specific styles for events view */

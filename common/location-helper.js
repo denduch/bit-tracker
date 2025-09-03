@@ -170,7 +170,7 @@ function getCountryFilterGroups(events) {
     const uniqueCountries = [...new Set(events.map(event => normalizeCountry(event.location)).filter(Boolean))].sort();
 
     const generalOptions = [
-        { label: 'Everywhere', value: 'everywhere', group: 'general' },
+        { label: 'Everywhere', value: 'everywhere', group: 'general', default: true },
         { label: 'Europe', value: 'europe', group: 'general' },
     ];
 
@@ -196,6 +196,7 @@ function getCountryFilterGroups(events) {
 
     return [{
         label: 'Filter by country',
+        group: 'country',
         options: [...generalOptions, ...polandOption, ...europeanOptions, ...restOfTheWorldOptions]
     }];
 }
@@ -204,19 +205,20 @@ export const getArtistFilterGroups = (events) => {
         const artists = [...new Set(events.map(event => event.artist.name))].sort();
 
     const artistOptions = [
-        { value: 'all', label: 'All artists' },
+        { value: 'all', label: 'All artists', default: true },
         ...artists.map(artist => ({ value: artist, label: artist }))
     ].map(option => ({ ...option, group: 'artist' }));
 
     return [{
         label: 'Filter by artist',
+        group: 'artist',
         options: artistOptions
     }];
 }
 
 const getDateFilterGroups = () => {
     const dateOptions = [
-        { value: 'anytime', label: 'Anytime' },
+        { value: 'anytime', label: 'Anytime', default: true },
         { value: 'today', label: 'Today' },
         { value: 'tomorrow', label: 'Tomorrow' },
         { value: 'week', label: 'Next 7 days' },
@@ -227,6 +229,7 @@ const getDateFilterGroups = () => {
 
     return [{
         label: 'Filter by date',
+        group: 'date',
         options: dateOptions
     }];
 };
