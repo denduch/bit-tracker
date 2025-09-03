@@ -28,9 +28,17 @@ export const fetchEvents = async () => {
       }
   
       console.log(`Found ${artistsToUpdate.length} artists needing event updates.`);
-      const newEvents = await apiProvider.getArtistEvents(artistsToUpdate);
+      const { allEvents: newEvents, spotifyIds } = await apiProvider.getArtistEvents(artistsToUpdate);
   
       const artistsById = new Map(allArtists.map(artist => [artist.id, artist]));
+
+      // Update spotifyIds for artists
+      for (const { artistId, spotifyId } of spotifyIds) {
+        const artist = artistsById.get(artistId);
+        if (artist) {
+          artist.spotifyId = spotifyId;
+        }
+      }
   
       // Update timestamps and clear old events for updated artists
       for (const updatedArtist of artistsToUpdate) {

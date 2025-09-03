@@ -15,7 +15,7 @@ async function combineAndStore(newArtists) {
     const oldArtist = oldArtistsMap.get(newArtist.id);
     if (oldArtist) {
       // Artist exists, merge new data but preserve old events and timestamp
-      return { ...oldArtist, ...newArtist };
+      return { ...newArtist, events: oldArtist.events, eventsLastFetched: oldArtist.eventsLastFetched, spotifyId: oldArtist.spotifyId };
     } else {
       // This is a completely new artist, return it as is
       return newArtist;

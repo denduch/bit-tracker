@@ -36,12 +36,16 @@ async function getEventsForArtist(artist) {
   const response = await fetch(artist.artistPageUrl);
   if (!response.ok) {
     console.error(`Failed to fetch page for ${artist.name}: ${response.statusText}`);
-    return [];
+    return { events: [], spotifyId: null };
   }
   const html = await response.text();
   const events = parseEventsFromHTML(html);
-  // Return events with artist_id for mapping, but not the whole artist object.
-  return events.map(event => ({ ...event, artist_id: artist.id }));
+
+  const spotifyLinkMatch = html.match(/href="https:\/\/open\.spotify\.com\/artist\/([^?]+)\?/);
+  const spotifyId = spotifyLinkMatch ? spotifyLinkMatch[1] : null;
+
+  const eventsWithArtistId = events.map(event => ({ ...event, artist_id: artist.id }));
+  return { events: eventsWithArtistId, spotifyId, artistId: artist.id };
 }
 
 async function setArtistTrackingStatus(artistId, track, csrfToken) {
@@ -83,6 +87,7 @@ async function getCsrfToken() {
 async function getArtistEvents(artists) {
   console.log('Fetching events from Bandsintown...');
   let allEvents = [];
+  let spotifyIds = [];
   const BATCH_SIZE = 2;
   const DELAY_MS = 200;
 
@@ -93,12 +98,18 @@ async function getArtistEvents(artists) {
     const batchPromises = batch.map(artist => 
       getEventsForArtist(artist).catch(error => {
         console.error(`Error processing artist ${artist.name}:`, error);
-        return []; // Return an empty array on error
+        return { events: [], spotifyId: null, artistId: artist.id }; // Return a default object on error
       })
     );
 
     const results = await Promise.all(batchPromises);
-    allEvents = allEvents.concat(results.flat());
+    const batchEvents = results.flatMap(r => r.events);
+    allEvents = allEvents.concat(batchEvents);
+
+    const batchSpotifyIds = results
+      .filter(r => r.spotifyId)
+      .map(r => ({ artistId: r.artistId, spotifyId: r.spotifyId }));
+    spotifyIds = spotifyIds.concat(batchSpotifyIds);
 
     communicator.broadcast(MessageType.EVENTS_LOADING_PROGRESS, { 
       current: Math.min(i + BATCH_SIZE, artists.length),
@@ -112,7 +123,7 @@ async function getArtistEvents(artists) {
   }
 
   console.log('Finished fetching all artist events.');
-  return allEvents;
+  return { allEvents, spotifyIds };
 }
 
 export const liveProvider = {
