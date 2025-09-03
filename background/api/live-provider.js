@@ -41,7 +41,7 @@ async function getEventsForArtist(artist) {
   const html = await response.text();
   const events = parseEventsFromHTML(html);
 
-  const spotifyLinkMatch = html.match(/href="https:\/\/open\.spotify\.com\/artist\/([^?]+)\?/);
+  const spotifyLinkMatch = html.match(/href="https:\/\/open\.spotify\.com\/artist\/([a-zA-Z0-9]{22})/);
   const spotifyId = spotifyLinkMatch ? spotifyLinkMatch[1] : null;
 
   const eventsWithArtistId = events.map(event => ({ ...event, artist_id: artist.id }));
@@ -87,7 +87,6 @@ async function getCsrfToken() {
 async function getArtistEvents(artists) {
   console.log('Fetching events from Bandsintown...');
   let allEvents = [];
-  let spotifyIds = [];
   const BATCH_SIZE = 2;
   const DELAY_MS = 200;
 
@@ -98,18 +97,13 @@ async function getArtistEvents(artists) {
     const batchPromises = batch.map(artist => 
       getEventsForArtist(artist).catch(error => {
         console.error(`Error processing artist ${artist.name}:`, error);
-        return { events: [], spotifyId: null, artistId: artist.id }; // Return a default object on error
+        return [];
       })
     );
 
     const results = await Promise.all(batchPromises);
-    const batchEvents = results.flatMap(r => r.events);
-    allEvents = allEvents.concat(batchEvents);
+    allEvents = allEvents.concat(results.flat());
 
-    const batchSpotifyIds = results
-      .filter(r => r.spotifyId)
-      .map(r => ({ artistId: r.artistId, spotifyId: r.spotifyId }));
-    spotifyIds = spotifyIds.concat(batchSpotifyIds);
 
     communicator.broadcast(MessageType.EVENTS_LOADING_PROGRESS, { 
       current: Math.min(i + BATCH_SIZE, artists.length),
@@ -123,7 +117,7 @@ async function getArtistEvents(artists) {
   }
 
   console.log('Finished fetching all artist events.');
-  return { allEvents, spotifyIds };
+  return allEvents;
 }
 
 export const liveProvider = {

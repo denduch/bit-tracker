@@ -28,12 +28,12 @@ export const fetchEvents = async () => {
       }
   
       console.log(`Found ${artistsToUpdate.length} artists needing event updates.`);
-      const { allEvents: newEvents, spotifyIds } = await apiProvider.getArtistEvents(artistsToUpdate);
+      const newEvents = await apiProvider.getArtistEvents(artistsToUpdate);
   
       const artistsById = new Map(allArtists.map(artist => [artist.id, artist]));
 
       // Update spotifyIds for artists
-      for (const { artistId, spotifyId } of spotifyIds) {
+      for (const { artistId, spotifyId } of newEvents) {
         const artist = artistsById.get(artistId);
         if (artist) {
           artist.spotifyId = spotifyId;
