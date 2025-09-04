@@ -33,27 +33,12 @@ export const fetchEvents = async () => {
       const artistsById = new Map(allArtists.map(artist => [artist.id, artist]));
 
       // Update spotifyIds for artists
-      for (const { artistId, spotifyId } of newEvents) {
+      for (const { artistId, events, spotifyId } of newEvents) {
         const artist = artistsById.get(artistId);
         if (artist) {
           artist.spotifyId = spotifyId;
-        }
-      }
-  
-      // Update timestamps and clear old events for updated artists
-      for (const updatedArtist of artistsToUpdate) {
-        const artist = artistsById.get(updatedArtist.id);
-        if (artist) {
-          artist.events = []; // Clear old events
+          artist.events = events;
           artist.eventsLastFetched = Date.now();
-        }
-      }
-  
-      // Add new events
-      for (const event of newEvents) {
-        const artist = artistsById.get(event.artist_id);
-        if (artist) {
-          artist.events.push(event);
         }
       }
   

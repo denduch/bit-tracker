@@ -40,12 +40,16 @@ async function getEventsForArtist(artist) {
   }
   const html = await response.text();
   const events = parseEventsFromHTML(html);
+  console.log('events: ', events);
 
   const spotifyLinkMatch = html.match(/href="https:\/\/open\.spotify\.com\/artist\/([a-zA-Z0-9]{22})/);
   const spotifyId = spotifyLinkMatch ? spotifyLinkMatch[1] : null;
 
   const eventsWithArtistId = events.map(event => ({ ...event, artist_id: artist.id }));
-  return { events: eventsWithArtistId, spotifyId, artistId: artist.id };
+  console.log('eventsWithArtistId: ', eventsWithArtistId);
+  const output = { events: eventsWithArtistId, spotifyId, artistId: artist.id };
+  console.log('Output: ', output);
+  return output;
 }
 
 async function setArtistTrackingStatus(artistId, track, csrfToken) {
@@ -103,6 +107,7 @@ async function getArtistEvents(artists) {
 
     const results = await Promise.all(batchPromises);
     allEvents = allEvents.concat(results.flat());
+    console.log('allEvents: ', allEvents);
 
 
     communicator.broadcast(MessageType.EVENTS_LOADING_PROGRESS, { 
