@@ -1,6 +1,7 @@
 import { store } from '../store.js';
 import { getCountryAndFlag, getCountryFilterGroups, europeanCountries, normalizeCountry, getDateFilterGroups, getArtistFilterGroups } from '../../common/location-helper.js';
 import { communicator, MessageType } from '../../common/messaging.js';
+import { storageManager } from '../../common/storage.js';
 import './tile-view.js';
 import './filter-view.js';
 
@@ -12,7 +13,14 @@ class EventsView extends HTMLElement {
 
     connectedCallback() {
         this.render();
-        communicator.on(MessageType.REDRAW, () => this.render());
+        communicator.on(MessageType.REDRAW, () => this.forceRerender());
+    }
+
+    async forceRerender() {
+        console.log('Force re-rendering events list...');
+        const artists = await storageManager.get('tracked-data', []);
+        store.setState({ artists });
+        this.render();
     }
 
     render() {
