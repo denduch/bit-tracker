@@ -11,6 +11,10 @@ class ArtistsView extends HTMLElement {
 
     connectedCallback() {
         this.render();
+        communicator.on(MessageType.REDRAW, () => {
+            console.log('I should rerender artist list');
+            this.render()
+    });
     }
 
     render() {

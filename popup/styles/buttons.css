@@ -19,11 +19,25 @@
         background-position: 100% 0;
     }
 
+    &.small {
+        padding: var(--space-xs) 0;
+        text-align: center;
+        font-size: var(--font-size-m);
+        border-style: none none solid solid;
+        width: 70px;
+        height: 25px;
+        border-radius: 0;
+    }
+
     &.primary {
         background-image: var(--gradient-accent-button);
     }
 
     &.secondary {
         background-image: var(--gradient-secondary-button);
+    }
+
+    &.spotify-button {
+        background-image: var(--gradient-spotify-button);
     }
 }

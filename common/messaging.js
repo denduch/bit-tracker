@@ -64,4 +64,5 @@ export const MessageType = {
   DATA_UPDATED: 'DATA_UPDATED',           // SW -> Popup
   CSRF_TOKEN_UPDATED: 'CSRF_TOKEN_UPDATED', // SW -> Popup
   EVENTS_LOADING_PROGRESS: 'EVENTS_LOADING_PROGRESS', // SW -> Popup
+  REDRAW: 'REDRAW', // SW -> Popup
 };

@@ -16,6 +16,7 @@
     --gradient-accent-button: linear-gradient(to right, #ff8c00, #ff4500, #ff4500, #ff8c00, #ff8c00, #ff4500, #ff4500, #ff8c00);
     --gradient-secondary: linear-gradient(to right, #4c515a, #3a3f47);
     --gradient-secondary-button: linear-gradient(to right, #4c515a, #3a3f47, #3a3f47, #4c515a, #4c515a, #3a3f47, #3a3f47, #4c515a);
+    --gradient-spotify-button: linear-gradient(to right, #1DB954, #1ED760, #1ED760, #1DB954, #1DB954, #1ED760, #1ED760, #1DB954);
 
     /* Filter Colors */
     --filter-color-world: #aaa;

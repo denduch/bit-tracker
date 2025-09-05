@@ -12,6 +12,7 @@ class EventsView extends HTMLElement {
 
     connectedCallback() {
         this.render();
+        communicator.on(MessageType.REDRAW, () => this.render());
     }
 
     render() {

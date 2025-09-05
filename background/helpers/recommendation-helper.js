@@ -10,8 +10,26 @@ export const fetchRecommendations = async () => {
   try {
     console.log('Fetching recommendations...');
     const recommendations = await apiProvider.getRecommendations();
-    await storageManager.set(RECOMMENDATIONS_CACHE_KEY, recommendations, true);
-    console.log('Successfully cached recommendations.');
+
+    console.log('Fetching events for recommendations...');
+    const eventData = await apiProvider.getArtistEvents(recommendations);
+
+    const eventDataByArtistId = new Map(eventData.map(data => [data.artistId, data]));
+
+    const recommendationsWithEvents = recommendations.map(artist => {
+      const artistEventData = eventDataByArtistId.get(artist.id);
+      if (artistEventData) {
+        return {
+          ...artist,
+          events: artistEventData.events,
+          spotifyId: artistEventData.spotifyId,
+        };
+      }
+      return artist;
+    });
+
+    await storageManager.set(RECOMMENDATIONS_CACHE_KEY, recommendationsWithEvents, true);
+    console.log('Successfully cached recommendations with events.');
     await communicator.broadcast(MessageType.DATA_UPDATED);
   } catch (error) {
     console.error('Failed to fetch recommendations:', error);
@@ -35,10 +53,21 @@ export const setArtistTrackingStatus = async ({ artistId, track }) => {
     try {
       const csrfToken = await storageManager.get('csrf-token');
       if (!csrfToken) {
-        throw new Error('CSRF token not found. Please fetch it first.');
+        await fetchCsrfToken();
       }
       await apiProvider.setArtistTrackingStatus(artistId, track, csrfToken);
-      await fetchArtists();
+
+      if (track) {
+        const recommendations = await storageManager.get('recommendations-data', []);
+        const trackedArtists = await storageManager.get('tracked-data', []);
+        const artistToTrack = recommendations.find(artist => artist.id === parseInt(artistId));
+
+        if (artistToTrack && !trackedArtists.some(artist => artist.id === artistId)) {
+          const updatedTrackedArtists = [...trackedArtists, artistToTrack].sort((a, b) => a.name.localeCompare(b.name));
+          await storageManager.set('tracked-data', updatedTrackedArtists, true);
+        }
+        await communicator.broadcast(MessageType.REDRAW);
+      }
     } catch (error) {
       console.error(`Failed to set tracking status for artist ${artistId}:`, error);
     }

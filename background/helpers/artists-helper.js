@@ -43,6 +43,7 @@ export const fetchArtists = async () => {
     await combineAndStore(newArtists);
     await storageManager.set(ARTISTS_LAST_FETCHED_KEY, Date.now());
     await fetchEvents(); // Chain event fetching after artists are fetched
+    await communicator.broadcast(MessageType.REDRAW);
   } catch (error) {
     console.error('Failed to fetch artists:', error);
   }
