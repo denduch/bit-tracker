@@ -43,21 +43,35 @@ export const fetchRecommendations = async () => {
     console.log('Fetching recommendations...');
     const recommendations = await apiProvider.getRecommendations();
 
-    console.log('Fetching events for recommendations...');
-    const eventData = await apiProvider.getArtistEvents(recommendations);
+    const oldRecommendations = await storageManager.get(RECOMMENDATIONS_CACHE_KEY, []);
+    const oldRecommendationsMap = new Map(oldRecommendations.map(rec => [rec.id, rec]));
+
+    const artistsToFetchDetailsFor = recommendations.filter(newRec => {
+      const oldRec = oldRecommendationsMap.get(newRec.id);
+      return !oldRec || !oldRec.spotifyId;
+    });
+
+    console.log(`Fetching events for ${artistsToFetchDetailsFor.length} of ${recommendations.length} recommendations...`);
+    const eventData = artistsToFetchDetailsFor.length > 0
+      ? await apiProvider.getArtistEvents(artistsToFetchDetailsFor)
+      : [];
 
     const eventDataByArtistId = new Map(eventData.map(data => [data.artistId, data]));
 
     const recommendationsWithEvents = recommendations.map(artist => {
-      const artistEventData = eventDataByArtistId.get(artist.id);
-      if (artistEventData) {
+      const newEventData = eventDataByArtistId.get(artist.id);
+      if (newEventData) {
+        // We fetched new data for this artist, so use it.
         return {
           ...artist,
-          events: artistEventData.events.map(event => ({ ...event, startsAt: new Date(event.startsAt).getTime() })),
-          spotifyId: artistEventData.spotifyId,
+          events: newEventData.events.map(event => ({ ...event, startsAt: new Date(event.startsAt).getTime() })),
+          spotifyId: newEventData.spotifyId,
         };
+      } else {
+        // We skipped this artist, so reuse their old data.
+        const oldRec = oldRecommendationsMap.get(artist.id);
+        return oldRec || artist; // Fallback to the basic artist object if no old record exists
       }
-      return artist;
     });
 
     await combineAndStoreRecommendations(recommendationsWithEvents);

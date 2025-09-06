@@ -27,7 +27,7 @@ class TileView extends HTMLElement {
             <link rel="stylesheet" href="styles/flags.css">
             <link rel="stylesheet" href="styles/buttons.css">
             <link rel="stylesheet" href="components/tile-view.css">
-            <div class="tile">
+            <div class="tile" data-type="${type}">
                 <div class="image">
                     <img src="${imageSrc}" alt="${name}">
                 </div>
@@ -49,7 +49,9 @@ class TileView extends HTMLElement {
                         </div>
                     ` : ''}
                     ${type === 'artists' && statusText ? `<div class="status-badge">${statusText}</div>` : ''}
-                    ${type === 'discover' ? `<button class="button ${isTracked ? 'primary' : 'secondary'} small follow-button ${isTracked ? 'tracked' : ''}">${isTracked ? 'Following' : 'Follow'}</button>` : ''}
+                    ${type === 'discover' ? `<button class="button secondary small">Skip</button>` : ''}
+                    ${type === 'discover' ? `<span class="discover-on-tour ${statusText === 'ON TOUR' ? 'not' : ''}">${statusText === 'ON TOUR' ? 'Not on Tour' : 'On Tour'}</span>` : ''}
+                    ${type === 'discover' ? `<button class="button ${isTracked ? 'secondary' : 'primary'} small follow-button ${isTracked ? 'tracked' : ''}">${isTracked ? 'Following' : 'Follow'}</button>` : ''}
                     ${type === 'discover' ? `<button class="button primary small spotify-button" ${!spotifyId || spotifyId === 'null' ? 'disabled' : ''}>Spotify</button>` : ''}
                 </div>
                 ${type==='discover' && spotifyId && spotifyId !== 'null' ? `<div class="spotify-player hidden"></div>` : ''}
