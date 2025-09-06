@@ -5,9 +5,41 @@ import { storageManager } from '../../common/storage.js';
 import { fetchArtists } from './artists-helper.js';
 
 const RECOMMENDATIONS_CACHE_KEY = 'recommendations-data';
+const RECOMMENDATIONS_LAST_FETCHED_KEY = 'recommendations-last-fetched';
+
+async function combineAndStoreRecommendations(newRecommendations) {
+  const oldRecommendations = await storageManager.get(RECOMMENDATIONS_CACHE_KEY, []);
+  const oldRecommendationsMap = new Map(oldRecommendations.map(rec => [rec.id, rec]));
+
+  const finalRecommendations = newRecommendations.map(newRec => {
+    const oldRec = oldRecommendationsMap.get(newRec.id);
+    if (oldRec) {
+      // Artist exists, merge new data but preserve old events as a fallback
+      return {
+        ...oldRec, // Start with old data to preserve properties like isTracked
+        ...newRec, // Overwrite with new data
+        events: newRec.events && newRec.events.length > 0 ? newRec.events : oldRec.events || [], // Prioritize new events
+      };
+    } else {
+      // This is a completely new recommendation
+      return newRec;
+    }
+  });
+
+  await storageManager.set(RECOMMENDATIONS_CACHE_KEY, finalRecommendations, true);
+  console.log('Successfully combined and cached recommendations.');
+}
 
 export const fetchRecommendations = async () => {
   try {
+    const lastFetched = await storageManager.get(RECOMMENDATIONS_LAST_FETCHED_KEY, 0);
+    const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+
+    if (lastFetched > twentyFourHoursAgo) {
+      console.log('Recommendations are up-to-date, skipping fetch.');
+      return;
+    }
+
     console.log('Fetching recommendations...');
     const recommendations = await apiProvider.getRecommendations();
 
@@ -21,14 +53,15 @@ export const fetchRecommendations = async () => {
       if (artistEventData) {
         return {
           ...artist,
-          events: artistEventData.events,
+          events: artistEventData.events.map(event => ({ ...event, startsAt: new Date(event.startsAt).getTime() })),
           spotifyId: artistEventData.spotifyId,
         };
       }
       return artist;
     });
 
-    await storageManager.set(RECOMMENDATIONS_CACHE_KEY, recommendationsWithEvents, true);
+    await combineAndStoreRecommendations(recommendationsWithEvents);
+    await storageManager.set(RECOMMENDATIONS_LAST_FETCHED_KEY, Date.now());
     console.log('Successfully cached recommendations with events.');
     await communicator.broadcast(MessageType.DATA_UPDATED);
   } catch (error) {

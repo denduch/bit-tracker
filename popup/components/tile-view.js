@@ -50,9 +50,9 @@ class TileView extends HTMLElement {
                     ` : ''}
                     ${type === 'artists' && statusText ? `<div class="status-badge">${statusText}</div>` : ''}
                     ${type === 'discover' ? `<button class="button ${isTracked ? 'primary' : 'secondary'} small follow-button ${isTracked ? 'tracked' : ''}">${isTracked ? 'Following' : 'Follow'}</button>` : ''}
-                    ${type === 'discover' && spotifyId ? `<button class="button primary small spotify-button">Spotify</button>` : ''}
+                    ${type === 'discover' ? `<button class="button primary small spotify-button" ${!spotifyId || spotifyId === 'null' ? 'disabled' : ''}>Spotify</button>` : ''}
                 </div>
-                ${type==='discover' && spotifyId ? `<div class="spotify-player hidden"></div>` : ''}
+                ${type==='discover' && spotifyId && spotifyId !== 'null' ? `<div class="spotify-player hidden"></div>` : ''}
             </div>
         `;
 

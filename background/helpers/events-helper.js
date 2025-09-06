@@ -37,7 +37,7 @@ export const fetchEvents = async () => {
         const artist = artistsById.get(artistId);
         if (artist) {
           artist.spotifyId = spotifyId;
-          artist.events = events;
+          artist.events = events.map(event => ({ ...event, startsAt: new Date(event.startsAt).getTime() }));
           artist.eventsLastFetched = Date.now();
         }
       }

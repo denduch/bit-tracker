@@ -40,4 +40,9 @@
     &.spotify-button {
         background-image: var(--gradient-spotify-button);
     }
+
+    &[disabled] {
+        pointer-events: none;
+        opacity: 0.5;
+    }
 }
