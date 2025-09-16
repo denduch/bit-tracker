@@ -92,7 +92,7 @@ async function getArtistEvents(artists) {
   console.log('Fetching events from Bandsintown...');
   let allEvents = [];
   const BATCH_SIZE = 2;
-  const DELAY_MS = 200;
+  const DELAY_MS = 2000;
 
   for (let i = 0; i < artists.length; i += BATCH_SIZE) {
     const batch = artists.slice(i, i + BATCH_SIZE);

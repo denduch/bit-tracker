@@ -1,5 +1,5 @@
 import { communicator, MessageType } from '../common/messaging.js';
-import { fetchRecommendations, fetchCsrfToken, setArtistTrackingStatus } from './helpers/recommendation-helper.js';
+import { fetchRecommendations, fetchCsrfToken, setArtistTrackingStatus, skipRecommendation } from './helpers/recommendation-helper.js';
 import { fetchArtists } from './helpers/artists-helper.js';
 import { fetchEvents } from './helpers/events-helper.js';
 
@@ -10,6 +10,9 @@ communicator.on(MessageType.REQUEST_EVENTS_FETCH, fetchEvents);
 communicator.on(MessageType.REQUEST_RECOMMENDATIONS_FETCH, fetchRecommendations);
 communicator.on(MessageType.REQUEST_CSRF_TOKEN_FETCH, fetchCsrfToken);
 communicator.on(MessageType.SET_ARTIST_TRACKING_STATUS, setArtistTrackingStatus);
+communicator.on(MessageType.SKIP_RECOMMENDATION, (data) => {
+  skipRecommendation(data.artistId);
+});
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Extension installed, creating alarm.');

@@ -30,7 +30,7 @@ class EventsView extends HTMLElement {
             (artist.events || []).map(event => ({ ...event, artist }))
         );
 
-        const sortedEvents = allEvents.sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt));
+        const sortedEvents = allEvents.sort((a, b) => new Date(parseInt(a.startsAt)) - new Date(parseInt(b.startsAt)));
         
         // Filter by country and date for events display
         const eventsFilteredByCountryAndDate = sortedEvents.filter(event => {
@@ -76,7 +76,7 @@ class EventsView extends HTMLElement {
                                         name="${event.artist.name}"
                                         details="${details}"
                                         country-code="${code}"
-                                        date="${event.startsAt}">
+                                        date="${parseInt(event.startsAt)}">
                                     </tile-view>
                                 `}).join('') : '<p>No upcoming events found.</p>'}
                             </div>
@@ -109,7 +109,7 @@ class EventsView extends HTMLElement {
             (artist.events || []).map(event => ({ ...event, artist }))
         );
 
-        const sortedEvents = allEvents.sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt));
+        const sortedEvents = allEvents.sort((a, b) => new Date(parseInt(a.startsAt)) - new Date(parseInt(b.startsAt)));
 
         const eventsFilteredByCountryAndDate = sortedEvents.filter(event => {
             const { country } = getCountryAndFlag(event.location);
@@ -162,7 +162,7 @@ class EventsView extends HTMLElement {
         if (filter === 'anytime' || !filter) return false;
 
         const now = new Date();
-        const eventDate = new Date(event.startsAt);
+        const eventDate = new Date(parseInt(event.startsAt));
         now.setHours(0, 0, 0, 0);
 
         switch (filter) {

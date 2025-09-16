@@ -33,7 +33,7 @@ async function combineAndStoreRecommendations(newRecommendations) {
 export const fetchRecommendations = async () => {
   try {
     const lastFetched = await storageManager.get(RECOMMENDATIONS_LAST_FETCHED_KEY, 0);
-    const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+    const twentyFourHoursAgo = Date.now() - 1 * 60 * 60 * 1000;
 
     if (lastFetched > twentyFourHoursAgo) {
       console.log('Recommendations are up-to-date, skipping fetch.');
@@ -48,7 +48,7 @@ export const fetchRecommendations = async () => {
 
     const artistsToFetchDetailsFor = recommendations.filter(newRec => {
       const oldRec = oldRecommendationsMap.get(newRec.id);
-      return !oldRec || !oldRec.spotifyId;
+      return !oldRec || oldRec.spotifyId === undefined;
     });
 
     console.log(`Fetching events for ${artistsToFetchDetailsFor.length} of ${recommendations.length} recommendations...`);
@@ -83,6 +83,21 @@ export const fetchRecommendations = async () => {
     await communicator.broadcast(MessageType.DATA_UPDATED); // Ensure UI resets loading state
   }
 }
+
+export const skipRecommendation = async (artistId) => {
+  try {
+    const recommendations = await storageManager.get(RECOMMENDATIONS_CACHE_KEY, []);
+    const recommendationToSkip = recommendations.find(rec => rec.id === artistId);
+
+    if (recommendationToSkip) {
+      recommendationToSkip.skipped = true;
+      await storageManager.set(RECOMMENDATIONS_CACHE_KEY, recommendations, true);
+      console.log(`Recommendation for artist ${artistId} skipped.`);
+    }
+  } catch (error) {
+    console.error(`Failed to skip recommendation for artist ${artistId}:`, error);
+  }
+};
 
 export const fetchCsrfToken = async () => {
   try {

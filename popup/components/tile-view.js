@@ -17,7 +17,7 @@ class TileView extends HTMLElement {
         const details = this.getAttribute('details');
         const countryCode = this.getAttribute('country-code');
         const type = this.getAttribute('type');
-        const dateStr = this.getAttribute('date');
+        const dateStr = parseInt(this.getAttribute('date'));
         const date = dateStr ? new Date(dateStr) : null;
         const statusText = this.getAttribute('status-text');
         const isTracked = this.getAttribute('is-tracked') === 'true';
@@ -49,7 +49,7 @@ class TileView extends HTMLElement {
                         </div>
                     ` : ''}
                     ${type === 'artists' && statusText ? `<div class="status-badge">${statusText}</div>` : ''}
-                    ${type === 'discover' ? `<button class="button secondary small">Skip</button>` : ''}
+                    ${type === 'discover' ? `<button class="button secondary small skip-button">Skip</button>` : ''}
                     ${type === 'discover' ? `<span class="discover-on-tour ${statusText === 'ON TOUR' ? 'not' : ''}">${statusText === 'ON TOUR' ? 'Not on Tour' : 'On Tour'}</span>` : ''}
                     ${type === 'discover' ? `<button class="button ${isTracked ? 'secondary' : 'primary'} small follow-button ${isTracked ? 'tracked' : ''}">${isTracked ? 'Following' : 'Follow'}</button>` : ''}
                     ${type === 'discover' ? `<button class="button primary small spotify-button" ${!spotifyId || spotifyId === 'null' ? 'disabled' : ''}>Spotify</button>` : ''}
@@ -78,6 +78,18 @@ class TileView extends HTMLElement {
 
         if (type === 'discover' && tile) {
             tile.addEventListener('click', (e) => {
+                const skipButton = e.target.closest('.skip-button');
+                if (skipButton) {
+                    const artistId = parseInt(this.getAttribute('artist-id'), 10);
+                    communicator.broadcast(MessageType.SKIP_RECOMMENDATION, { artistId });
+                    this.classList.add('hidden');
+                    const spotifyPlayer = this.shadowRoot.querySelector('.spotify-player');
+                    if(spotifyPlayer) {
+                        spotifyPlayer.innerHTML = '';
+                    }
+                    return;
+                }
+
                 const followButton = e.target.closest('.follow-button');
                 if (followButton) {
                     console.log('Follow button clicked');
@@ -87,11 +99,11 @@ class TileView extends HTMLElement {
                     this.setAttribute('is-tracked', newTrackedStatus.toString());
                     followButton.textContent = newTrackedStatus ? 'Following' : 'Follow';
                     if (newTrackedStatus) {
-                        followButton.classList.add('primary');
-                        followButton.classList.remove('secondary');
-                    } else {
                         followButton.classList.add('secondary');
                         followButton.classList.remove('primary');
+                    } else {
+                        followButton.classList.add('primary');
+                        followButton.classList.remove('secondary');
                     }
 
                     communicator.broadcast(MessageType.SET_ARTIST_TRACKING_STATUS, {

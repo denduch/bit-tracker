@@ -32,6 +32,7 @@ class DiscoverView extends HTMLElement {
                         <div class="artist-list list-container">
                             ${recommendations.map(artist => `
                                 <tile-view 
+                                    class="${artist.skipped ? 'hidden' : ''}"
                                     image-src="${artist.properlySizedArtistImageURL}"
                                     name="${artist.name}"
                                     type="discover"

@@ -1,3 +1,7 @@
 @import url('../styles/shared.css');
 
+tile-view.hidden {
+    display: none;
+}
+
 /* Component-specific styles for discover view */
