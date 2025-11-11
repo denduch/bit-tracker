@@ -23,7 +23,6 @@ async function combineAndStore(newArtists) {
   });
 
   await storageManager.set(DATA_CACHE_KEY, finalArtists, true);
-  console.log('Successfully combined and cached data.');
   await communicator.broadcast(MessageType.DATA_UPDATED);
 }
 
@@ -33,12 +32,10 @@ export const fetchArtists = async () => {
     const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
 
     if (lastFetched > twentyFourHoursAgo) {
-      console.log('Artists list is up-to-date, skipping fetch. Fetching events instead.');
       await fetchEvents();
       return;
     }
 
-    console.log('Fetching artists...');
     const newArtists = await apiProvider.getTrackedArtists();
     await combineAndStore(newArtists);
     await storageManager.set(ARTISTS_LAST_FETCHED_KEY, Date.now());

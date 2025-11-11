@@ -6,16 +6,13 @@
 export function parseEventsFromHTML(html) {
   const match = html.match(/<script>window\.__data=(.*?)<\/script>/);
   if (match && match[1]) {
-    console.log('Found event data in HTML:', match[1]);
     try {
       const data = JSON.parse(match[1]);
-      console.log('Parsed event data:', data);
       if (data.artistView?.body?.events?.upcomingEvents?.events) {
-        console.log('Found events:', data.artistView.body.events.upcomingEvents.events);
         return data.artistView.body.events.upcomingEvents.events;
       }
     } catch (error) {
-      console.error('Failed to parse event data from HTML:', error);
+      console.error('Failed to parse event data:', error);
       return [];
     }
   }

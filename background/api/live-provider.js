@@ -4,7 +4,6 @@ const BANDSINTOWN_ARTISTS_URL = 'https://www.bandsintown.com/u/trackedArtists?ma
 const BANDSINTOWN_RECOMMENDATIONS_URL = 'https://www.bandsintown.com/searchArtists?searchTerm&genres=recommended';
 
 async function getTrackedArtists() {
-  console.log('Fetching artists from Bandsintown...');
   const response = await fetch(BANDSINTOWN_ARTISTS_URL, {
     headers: {
       'Accept': 'application/json',
@@ -18,7 +17,6 @@ async function getTrackedArtists() {
 }
 
 async function getRecommendations() {
-  console.log('Fetching recommendations from Bandsintown...');
   const response = await fetch(BANDSINTOWN_RECOMMENDATIONS_URL, {
     headers: {
       'Accept': 'application/json',
@@ -32,29 +30,27 @@ async function getRecommendations() {
 }
 
 async function getEventsForArtist(artist) {
-  console.log(`Fetching events for ${artist.name} from ${artist.artistPageUrl}`);
   const response = await fetch(artist.artistPageUrl);
+  if (response.status === 403) {
+    console.error(`Access forbidden (403) for ${artist.name}`);
+    throw new Error('HTTP_403_FORBIDDEN');
+  }
   if (!response.ok) {
-    console.error(`Failed to fetch page for ${artist.name}: ${response.statusText}`);
-    return { events: [], spotifyId: null };
+    console.error(`Failed to fetch ${artist.name}: ${response.statusText}`);
+    return { events: [], spotifyId: null, artistId: artist.id };
   }
   const html = await response.text();
   const events = parseEventsFromHTML(html);
-  console.log('events: ', events);
 
   const spotifyLinkMatch = html.match(/href="https:\/\/open\.spotify\.com\/artist\/([a-zA-Z0-9]{22})/);
   const spotifyId = spotifyLinkMatch ? spotifyLinkMatch[1] : null;
 
   const eventsWithArtistId = events.map(event => ({ ...event, artist_id: artist.id }));
-  console.log('eventsWithArtistId: ', eventsWithArtistId);
-  const output = { events: eventsWithArtistId, spotifyId, artistId: artist.id };
-  console.log('Output: ', output);
-  return output;
+  return { events: eventsWithArtistId, spotifyId, artistId: artist.id };
 }
 
 async function setArtistTrackingStatus(artistId, track, csrfToken) {
   const action = track ? 'track' : 'untrack';
-  console.log(`${action.toUpperCase()}ING artist ${artistId}...`);
   const url = `https://www.bandsintown.com/a/${artistId}/track`;
 
   const response = await fetch(url, {
@@ -89,26 +85,22 @@ async function getCsrfToken() {
 }
 
 async function getArtistEvents(artists) {
-  console.log('Fetching events from Bandsintown...');
   let allEvents = [];
   const BATCH_SIZE = 2;
   const DELAY_MS = 2000;
 
   for (let i = 0; i < artists.length; i += BATCH_SIZE) {
     const batch = artists.slice(i, i + BATCH_SIZE);
-    console.log(`Processing batch starting with artist ${i + 1}/${artists.length}...`);
 
     const batchPromises = batch.map(artist => 
       getEventsForArtist(artist).catch(error => {
-        console.error(`Error processing artist ${artist.name}:`, error);
-        return [];
+        console.error(`Error processing ${artist.name}:`, error);
+        return { events: [], spotifyId: null, artistId: artist.id };
       })
     );
 
     const results = await Promise.all(batchPromises);
-    allEvents = allEvents.concat(results.flat());
-    console.log('allEvents: ', allEvents);
-
+    allEvents = allEvents.concat(results);
 
     communicator.broadcast(MessageType.EVENTS_LOADING_PROGRESS, { 
       current: Math.min(i + BATCH_SIZE, artists.length),
@@ -116,12 +108,10 @@ async function getArtistEvents(artists) {
     });
 
     if (i + BATCH_SIZE < artists.length) {
-      console.log(`Waiting for ${DELAY_MS}ms before the next batch...`);
       await new Promise(resolve => setTimeout(resolve, DELAY_MS));
     }
   }
 
-  console.log('Finished fetching all artist events.');
   return allEvents;
 }
 

@@ -15,7 +15,6 @@ communicator.on(MessageType.SKIP_RECOMMENDATION, (data) => {
 });
 
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('Extension installed, creating alarm.');
   chrome.alarms.create(FETCH_ALARM_NAME, {
     delayInMinutes: 1, // Start after 1 minute
     periodInMinutes: 60 // Repeat every hour
@@ -24,9 +23,6 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === FETCH_ALARM_NAME) {
-    console.log('Alarm triggered: fetching fresh data...');
     await fetchArtists();
   }
 });
-
-console.log('Service worker is listening for messages and alarms...');

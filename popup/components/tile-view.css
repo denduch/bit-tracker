@@ -57,7 +57,7 @@
     .date-display, .status-badge {
         background-color: var(--color-accent);
         color: var(--color-white);
-        padding: var(--space-s) var(--space-m);
+        padding: 3px var(--space-m);
         font-size: var(--font-size-s);
         font-weight: bold;
         position: absolute;
@@ -70,12 +70,19 @@
     }
 
     .date-display {
+        padding: 3px var(--space-m);
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
         line-height: 1;
-        width: 54px;
+        width: 69px;
+        border-right: none;
+        right: 0;
+        top: 0;
+        margin-top: -1px;
         padding-inline: 0;
+        border-bottom-left-radius: 0;
 
         .day {
             font-size: var(--font-size-l);
@@ -90,6 +97,16 @@
         .year {
             font-size: var(--font-size-s);
             opacity: 0.8;
+        }
+    }
+
+    .event-spotify {
+        margin-top: -1px;
+    
+        .button {
+            height: 20px;
+            font-size: 11px;
+            text-shadow: 1px 1px 4px rgba(0,0,0, 0.3);
         }
     }
 

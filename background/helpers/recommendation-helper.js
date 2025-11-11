@@ -27,7 +27,6 @@ async function combineAndStoreRecommendations(newRecommendations) {
   });
 
   await storageManager.set(RECOMMENDATIONS_CACHE_KEY, finalRecommendations, true);
-  console.log('Successfully combined and cached recommendations.');
 }
 
 export const fetchRecommendations = async () => {
@@ -36,11 +35,9 @@ export const fetchRecommendations = async () => {
     const twentyFourHoursAgo = Date.now() - 1 * 60 * 60 * 1000;
 
     if (lastFetched > twentyFourHoursAgo) {
-      console.log('Recommendations are up-to-date, skipping fetch.');
       return;
     }
 
-    console.log('Fetching recommendations...');
     const recommendations = await apiProvider.getRecommendations();
 
     const oldRecommendations = await storageManager.get(RECOMMENDATIONS_CACHE_KEY, []);
@@ -51,7 +48,6 @@ export const fetchRecommendations = async () => {
       return !oldRec || oldRec.spotifyId === undefined;
     });
 
-    console.log(`Fetching events for ${artistsToFetchDetailsFor.length} of ${recommendations.length} recommendations...`);
     const eventData = artistsToFetchDetailsFor.length > 0
       ? await apiProvider.getArtistEvents(artistsToFetchDetailsFor)
       : [];
@@ -76,7 +72,6 @@ export const fetchRecommendations = async () => {
 
     await combineAndStoreRecommendations(recommendationsWithEvents);
     await storageManager.set(RECOMMENDATIONS_LAST_FETCHED_KEY, Date.now());
-    console.log('Successfully cached recommendations with events.');
     await communicator.broadcast(MessageType.DATA_UPDATED);
   } catch (error) {
     console.error('Failed to fetch recommendations:', error);
@@ -92,7 +87,6 @@ export const skipRecommendation = async (artistId) => {
     if (recommendationToSkip) {
       recommendationToSkip.skipped = true;
       await storageManager.set(RECOMMENDATIONS_CACHE_KEY, recommendations, true);
-      console.log(`Recommendation for artist ${artistId} skipped.`);
     }
   } catch (error) {
     console.error(`Failed to skip recommendation for artist ${artistId}:`, error);
@@ -101,9 +95,7 @@ export const skipRecommendation = async (artistId) => {
 
 export const fetchCsrfToken = async () => {
   try {
-    console.log('Fetching CSRF token...');
     const token = await apiProvider.getCsrfToken();
-    console.log('CSRF token fetched:', token);
     await storageManager.set('csrf-token', token);
     await communicator.broadcast(MessageType.CSRF_TOKEN_UPDATED, { token });
   } catch (error) {

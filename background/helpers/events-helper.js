@@ -7,11 +7,9 @@ const DATA_CACHE_KEY = 'tracked-data';
 
 export const fetchEvents = async () => {
     try {
-      console.log('Checking for events to fetch...');
       const allArtists = await storageManager.get(DATA_CACHE_KEY, []);
   
       if (allArtists.length === 0) {
-        console.log('No artists in cache, skipping event fetch.');
         await communicator.broadcast(MessageType.DATA_UPDATED);
         return;
       }
@@ -27,24 +25,51 @@ export const fetchEvents = async () => {
         return;
       }
   
-      console.log(`Found ${artistsToUpdate.length} artists needing event updates.`);
-      const newEvents = await apiProvider.getArtistEvents(artistsToUpdate);
-  
       const artistsById = new Map(allArtists.map(artist => [artist.id, artist]));
 
-      // Update spotifyIds for artists
-      for (const { artistId, events, spotifyId } of newEvents) {
-        const artist = artistsById.get(artistId);
-        if (artist) {
-          artist.spotifyId = spotifyId;
-          artist.events = events.map(event => ({ ...event, startsAt: new Date(event.startsAt).getTime() }));
-          artist.eventsLastFetched = Date.now();
+      const BATCH_SIZE = 2;
+      const DELAY_MS = 2000;
+      let shouldStop = false;
+      const totalBatches = Math.ceil(artistsToUpdate.length / BATCH_SIZE);
+
+      for (let i = 0; i < artistsToUpdate.length && !shouldStop; i += BATCH_SIZE) {
+        const batch = artistsToUpdate.slice(i, i + BATCH_SIZE);
+        const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
+        console.log(`Processing events batch ${currentBatch}/${totalBatches} (artists ${i + 1}-${Math.min(i + BATCH_SIZE, artistsToUpdate.length)} of ${artistsToUpdate.length})`);
+
+        try {
+          // Fetch events for the whole batch at once
+          const batchResults = await apiProvider.getArtistEvents(batch);
+          
+          // Process and save each artist's results immediately
+          for (const result of batchResults) {
+            const { artistId, events, spotifyId } = result;
+            const target = artistsById.get(artistId);
+            if (target) {
+              target.spotifyId = spotifyId;
+              target.events = events.map(event => ({ ...event, startsAt: new Date(event.startsAt).getTime() }));
+              target.eventsLastFetched = Date.now();
+              
+              // Persist immediately after each artist is processed
+              const combinedData = Array.from(artistsById.values());
+              await storageManager.set(DATA_CACHE_KEY, combinedData, true);
+            }
+          }
+        } catch (err) {
+          if (err && err.message === 'HTTP_403_FORBIDDEN') {
+            console.error('Events fetch error: 403 Forbidden - stopping further requests');
+            shouldStop = true;
+            break;
+          }
+          console.error('Events fetch error:', err);
+        }
+
+        if (i + BATCH_SIZE < artistsToUpdate.length && !shouldStop) {
+          await new Promise(resolve => setTimeout(resolve, DELAY_MS));
         }
       }
-  
-      const combinedData = Array.from(artistsById.values());
-      await storageManager.set(DATA_CACHE_KEY, combinedData, true);
-      console.log('Successfully updated events and timestamps.');
+
+      console.log('Finished updating events.');
       await communicator.broadcast(MessageType.DATA_UPDATED);
   
     } catch (error) {

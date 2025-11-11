@@ -7,10 +7,7 @@ class Communicator {
    */
   on(type, handler) {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      console.log("ON MESSAGE:", message);
-      console.log("ON TYPE:", message.type, type);
       if (message.type === type) {
-        // This listener is for events, so we don't send a response.
         handler(message.payload, sender);
       }
     });
@@ -23,7 +20,6 @@ class Communicator {
    */
   async broadcast(type, payload) {
     const message = { type, payload };
-    console.log(`Broadcasting message: ${type}`, payload);
     // Send to the service worker
     chrome.runtime.sendMessage(message).catch(err => {
       if (err.message.includes('Could not establish connection')) {

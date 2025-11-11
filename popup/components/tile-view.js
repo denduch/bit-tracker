@@ -47,6 +47,9 @@ class TileView extends HTMLElement {
                             </div>
                             <div class="year">${date.getFullYear()}</div>
                         </div>
+                        <div class="event-spotify">
+                            <button class="button primary small spotify-button" ${!spotifyId || spotifyId === 'null' ? 'disabled' : ''}>Spotify</button>
+                        </div>
                     ` : ''}
                     ${type === 'artists' && statusText ? `<div class="status-badge">${statusText}</div>` : ''}
                     ${type === 'discover' ? `<button class="button secondary small skip-button">Skip</button>` : ''}
@@ -54,7 +57,7 @@ class TileView extends HTMLElement {
                     ${type === 'discover' ? `<button class="button ${isTracked ? 'secondary' : 'primary'} small follow-button ${isTracked ? 'tracked' : ''}">${isTracked ? 'Following' : 'Follow'}</button>` : ''}
                     ${type === 'discover' ? `<button class="button primary small spotify-button" ${!spotifyId || spotifyId === 'null' ? 'disabled' : ''}>Spotify</button>` : ''}
                 </div>
-                ${type==='discover' && spotifyId && spotifyId !== 'null' ? `<div class="spotify-player hidden"></div>` : ''}
+                ${(type==='discover' || type==='events') && spotifyId && spotifyId !== 'null' ? `<div class="spotify-player hidden"></div>` : ''}
             </div>
         `;
 
@@ -76,7 +79,7 @@ class TileView extends HTMLElement {
         const artistId = this.getAttribute('artist-id');
         const isTracked = this.getAttribute('is-tracked') === 'true';
 
-        if (type === 'discover' && tile) {
+        if ((type === 'discover' || type === 'events') && tile) {
             tile.addEventListener('click', (e) => {
                 const skipButton = e.target.closest('.skip-button');
                 if (skipButton) {
