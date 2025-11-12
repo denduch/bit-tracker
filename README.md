@@ -26,7 +26,7 @@ bit-tracker/
 ## Technologies
 
 - **Frontend (Popup)**: HTML, CSS, Vanilla JavaScript with Web Components.
-- **Backend (Service Worker)**: Vanilla JavaScript and `node-html-parser` for data processing.
+- **Backend (Service Worker)**: Vanilla JavaScript for data processing.
 - **Dependency Management**: npm.
 
 ## Installation
@@ -56,4 +56,3 @@ For information about how this extension handles user data, please see our [Priv
 ## Notes
 
 - The extension is compliant with the **Manifest V3** specification.
-- Using `node-html-parser` in the service worker may require special attention to Content Security Policy (CSP) handling.
