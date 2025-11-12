@@ -43,7 +43,12 @@ export const fetchEvents = async () => {
           
           // Process and save each artist's results immediately
           for (const result of batchResults) {
-            const { artistId, events, spotifyId } = result;
+            const { artistId, events, spotifyId, is403 } = result;
+            if (is403) {
+              console.log('Stopping events fetch due to 403 Forbidden');
+              shouldStop = true;
+              break;
+            }
             const target = artistsById.get(artistId);
             if (target) {
               target.spotifyId = spotifyId;
@@ -56,11 +61,6 @@ export const fetchEvents = async () => {
             }
           }
         } catch (err) {
-          if (err && err.message === 'HTTP_403_FORBIDDEN') {
-            console.error('Events fetch error: 403 Forbidden - stopping further requests');
-            shouldStop = true;
-            break;
-          }
           console.error('Events fetch error:', err);
         }
 

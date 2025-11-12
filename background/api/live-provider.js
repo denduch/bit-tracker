@@ -32,8 +32,8 @@ async function getRecommendations() {
 async function getEventsForArtist(artist) {
   const response = await fetch(artist.artistPageUrl);
   if (response.status === 403) {
-    console.error(`Access forbidden (403) for ${artist.name}`);
-    throw new Error('HTTP_403_FORBIDDEN');
+    console.log(`Access forbidden (403) for ${artist.name}`);
+    return { events: [], spotifyId: null, artistId: artist.id, is403: true };
   }
   if (!response.ok) {
     console.error(`Failed to fetch ${artist.name}: ${response.statusText}`);

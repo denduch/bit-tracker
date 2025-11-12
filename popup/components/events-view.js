@@ -77,6 +77,7 @@ class EventsView extends HTMLElement {
                                         details="${details}"
                                         country-code="${code}"
                                         spotify-id="${event.artist.spotifyId}"
+                                        event-url="${event.eventUrl || ''}"
                                         date="${parseInt(event.startsAt)}">
                                     </tile-view>
                                 `}).join('') : '<p>No upcoming events found.</p>'}

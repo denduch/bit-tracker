@@ -49,6 +49,10 @@ bit-tracker/
 - **Data Storage**: Application state and user data are saved using the `chrome.storage` API.
 - **Communication**: The popup communicates with the service worker to exchange data and delegate tasks.
 
+## Privacy
+
+For information about how this extension handles user data, please see our [Privacy Policy](privacy-policy.md).
+
 ## Notes
 
 - The extension is compliant with the **Manifest V3** specification.

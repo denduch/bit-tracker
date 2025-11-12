@@ -22,6 +22,11 @@ class TileView extends HTMLElement {
         const statusText = this.getAttribute('status-text');
         const isTracked = this.getAttribute('is-tracked') === 'true';
         const spotifyId = this.getAttribute('spotify-id');
+        const eventUrl = this.getAttribute('event-url');
+
+        const nameElement = type === 'events' 
+            ? `<a class="name-link" href="${eventUrl || '#'}" target="_blank" rel="noopener noreferrer">${name}</a>`
+            : `<div class="name">${name}</div>`;
 
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="styles/flags.css">
@@ -32,7 +37,7 @@ class TileView extends HTMLElement {
                     <img src="${imageSrc}" alt="${name}">
                 </div>
                 <div class="details">
-                    <div class="name">${name}</div>
+                    ${nameElement}
                     <div class="sub-details">
                         ${countryCode ? `<span class="flag ${countryCode}"></span>` : ''}
                         ${details}

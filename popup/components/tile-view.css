@@ -39,6 +39,20 @@
         font-weight: bold;
         letter-spacing: 0.7px;
     }
+
+    .name-link {
+        font-weight: bold;
+        letter-spacing: 0.7px;
+        color: var(--color-text-primary);
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 0.2s ease-out;
+
+        &:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+    }
     
     .sub-details {
         font-size: 11px;
