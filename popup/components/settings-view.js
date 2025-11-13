@@ -1,15 +1,18 @@
 import { storageManager } from '../../common/storage.js';
+import { waitForComponentReady } from './component-ready.js';
 
 class SettingsView extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.isReady = false;
     }
 
     connectedCallback() {
         this.render();
         this.initializeEventListeners();
         this.initializeMockToggle();
+        waitForComponentReady(this);
     }
 
     async initializeMockToggle() {

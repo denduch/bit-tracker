@@ -2,7 +2,7 @@ import { storageManager } from '../common/storage.js';
 
 class Store {
   constructor() {
-    this.state = {};
+    this.state = { isReady: false };
     this.listeners = new Set();
   }
 
@@ -41,9 +41,11 @@ class Store {
         artists,
         recommendations,
         activeFilters,
+        isReady: true,
       });
     } catch (error) {
       console.error('Failed to load initial data:', error);
+      this.setState({ isReady: true });
     } 
   }
 }

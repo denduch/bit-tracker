@@ -6,7 +6,11 @@
     <link rel="stylesheet" href="popup.css">
     <link rel="stylesheet" href="styles/buttons.css">
 </head>
-<body>
+<body class="loading">
+    <div class="loader">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
     <tab-view>
         <artists-view class="panel" slot="artists"></artists-view>
         <events-view class="panel" slot="events"></events-view>

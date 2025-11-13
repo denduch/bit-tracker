@@ -2,12 +2,14 @@ import { store } from '../store.js';
 import { getCountryAndFlag, isCountryInEurope } from '../../common/location-helper.js';
 import { communicator, MessageType } from '../../common/messaging.js';
 import { storageManager } from '../../common/storage.js';
+import { waitForComponentReady } from './component-ready.js';
 import './tile-view.js';
 
 class ArtistsView extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.isReady = false;
     }
 
     connectedCallback() {
@@ -65,6 +67,8 @@ class ArtistsView extends HTMLElement {
             console.log('Refresh button clicked, sending fetch request from artists-view.');
             communicator.broadcast(MessageType.REQUEST_ARTIST_FETCH);
         });
+
+        waitForComponentReady(this, ['tile-view']);
     }
 }
 

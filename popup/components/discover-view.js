@@ -1,11 +1,13 @@
 import { store } from '../store.js';
 import { communicator, MessageType } from '../../common/messaging.js';
+import { waitForComponentReady } from './component-ready.js';
 import './tile-view.js';
 
 class DiscoverView extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.isReady = false;
     }
 
     connectedCallback() {
@@ -54,6 +56,8 @@ class DiscoverView extends HTMLElement {
             store.setState({ isLoadingRecommendations: true });
             communicator.broadcast(MessageType.REQUEST_RECOMMENDATIONS_FETCH);
         });
+
+        waitForComponentReady(this, ['tile-view']);
     }
 }
 

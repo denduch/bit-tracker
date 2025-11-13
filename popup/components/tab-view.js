@@ -1,4 +1,5 @@
 import { storageManager } from '../../common/storage.js';
+import { store } from '../store.js';
 
 class TabView extends HTMLElement {
     constructor() {
@@ -7,10 +8,31 @@ class TabView extends HTMLElement {
     }
 
     async connectedCallback() {
+        this.waitForComponentsReady();
         this.render();
         const lastTab = await storageManager.get('lastActiveTab', 'artists');
         this.switchTab(lastTab);
         this.addEventListeners();
+    }
+
+    waitForComponentsReady() {
+        let loadingCount = 0;
+        let readyCount = 0;
+
+        const handleEvent = (event) => {
+            if (event.type === 'component-loading') {
+                loadingCount++;
+                document.body.classList.add('loading');
+            } else if (event.type === 'component-ready') {
+                readyCount++;
+                if (readyCount === loadingCount && loadingCount > 0) {
+                    document.body.classList.remove('loading');
+                }
+            }
+        };
+
+        document.addEventListener('component-loading', handleEvent);
+        document.addEventListener('component-ready', handleEvent);
     }
 
     render() {

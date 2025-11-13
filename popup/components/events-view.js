@@ -2,6 +2,7 @@ import { store } from '../store.js';
 import { getCountryAndFlag, getCountryFilterGroups, europeanCountries, normalizeCountry, getDateFilterGroups, getArtistFilterGroups } from '../../common/location-helper.js';
 import { communicator, MessageType } from '../../common/messaging.js';
 import { storageManager } from '../../common/storage.js';
+import { waitForComponentReady } from './component-ready.js';
 import './tile-view.js';
 import './filter-view.js';
 
@@ -9,6 +10,7 @@ class EventsView extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.isReady = false;
     }
 
     connectedCallback() {
@@ -231,6 +233,8 @@ class EventsView extends HTMLElement {
             });
             filterView.dataset.listenerAttached = 'true';
         }
+
+        waitForComponentReady(this, ['tile-view', 'filter-view']);
     }
 }
 
