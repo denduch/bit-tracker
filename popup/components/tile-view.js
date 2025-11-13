@@ -9,6 +9,19 @@ class TileView extends HTMLElement {
 
     connectedCallback() {
         this.render();
+        this.updateFavoritedClass();
+    }
+
+    updateFavoritedClass() {
+        const isFavorited = this.getAttribute('is-favorited') === 'true';
+        const tile = this.shadowRoot.querySelector('.tile');
+        if (tile) {
+            if (isFavorited) {
+                tile.classList.add('favorited');
+            } else {
+                tile.classList.remove('favorited');
+            }
+        }
     }
 
     render() {
@@ -23,6 +36,8 @@ class TileView extends HTMLElement {
         const isTracked = this.getAttribute('is-tracked') === 'true';
         const spotifyId = this.getAttribute('spotify-id');
         const eventUrl = this.getAttribute('event-url');
+        const isFavorited = this.getAttribute('is-favorited') === 'true';
+        const eventId = this.getAttribute('event-id');
 
         const nameElement = type === 'events' 
             ? `<a class="name-link" href="${eventUrl || '#'}" target="_blank" rel="noopener noreferrer">${name}</a>`
@@ -32,6 +47,26 @@ class TileView extends HTMLElement {
             <link rel="stylesheet" href="styles/flags.css">
             <link rel="stylesheet" href="styles/buttons.css">
             <link rel="stylesheet" href="components/tile-view.css">
+            <style>
+                .tile.favorited {
+                    border-color: #d4af37;
+                    background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.04) 100%);
+                    box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), var(--shadow-main);
+                }
+                
+                .tile.favorited:hover {
+                    box-shadow: 0 0 16px rgba(212, 175, 55, 0.5), var(--shadow-hover);
+                    background: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0.06) 100%);
+                }
+
+                .tile.favorited .name-link {
+                    color: white;
+                }
+
+                .tile.favorited .sub-details {
+                    color: #d4af37;
+                }
+            </style>
             <div class="tile" data-type="${type}">
                 <div class="image">
                     <img src="${imageSrc}" alt="${name}">
@@ -45,6 +80,9 @@ class TileView extends HTMLElement {
                 </div>
                 <div class="status">
                     ${type === 'events' ? `
+                        <button class="favorite-button ${isFavorited ? 'favorited' : ''}" title="Add to favorites">
+                            ${isFavorited ? '★' : '☆'}
+                        </button>
                         <div class="date-display">
                             <div>
                                 <span class="day">${date.getDate()}</span>
@@ -73,8 +111,7 @@ class TileView extends HTMLElement {
         const followButton = this.shadowRoot.getElementById('follow-button');
         if (followButton) {
             followButton.addEventListener('click', (e) => {
-                console.log('Follow button clicked');
-                
+                // Follow button handler
             });
         }
 
@@ -83,6 +120,8 @@ class TileView extends HTMLElement {
         const spotifyId = this.getAttribute('spotify-id');
         const artistId = this.getAttribute('artist-id');
         const isTracked = this.getAttribute('is-tracked') === 'true';
+        const isFavorited = this.getAttribute('is-favorited') === 'true';
+        const eventId = this.getAttribute('event-id');
 
         if ((type === 'discover' || type === 'events') && tile) {
             tile.addEventListener('click', (e) => {
@@ -100,9 +139,7 @@ class TileView extends HTMLElement {
 
                 const followButton = e.target.closest('.follow-button');
                 if (followButton) {
-                    console.log('Follow button clicked');
                     const newTrackedStatus = !isTracked;
-                    console.log('Artist ID:', artistId, isTracked);
                     // Optimistically update UI
                     this.setAttribute('is-tracked', newTrackedStatus.toString());
                     followButton.textContent = newTrackedStatus ? 'Following' : 'Follow';
@@ -123,7 +160,6 @@ class TileView extends HTMLElement {
 
                 const spotifyButton = e.target.closest('.spotify-button');
                 if (spotifyButton) {
-                    console.log('Spotify button clicked');
                     const spotifyPlayer = this.shadowRoot.querySelector('.spotify-player');
                     if(spotifyPlayer.classList.contains('hidden')) {
                         spotifyPlayer.innerHTML = `<iframe src="https://open.spotify.com/embed/artist/${spotifyId}?theme=0" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
@@ -132,6 +168,21 @@ class TileView extends HTMLElement {
                         spotifyPlayer.classList.add('hidden');
                         spotifyPlayer.innerHTML = '';
                     }
+                }
+
+                const favoriteButton = e.target.closest('.favorite-button');
+                if (favoriteButton) {
+                    const currentIsFavorited = this.getAttribute('is-favorited') === 'true';
+                    const newFavoritedStatus = !currentIsFavorited;
+                    this.setAttribute('is-favorited', newFavoritedStatus.toString());
+                    favoriteButton.textContent = newFavoritedStatus ? '★' : '☆';
+                    favoriteButton.classList.toggle('favorited');
+                    this.updateFavoritedClass();
+                    
+                    communicator.broadcast(MessageType.SET_EVENT_FAVORITE, {
+                        eventId: parseInt(eventId),
+                        favorite: newFavoritedStatus,
+                    });
                 }
             });
         }

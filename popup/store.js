@@ -34,7 +34,7 @@ class Store {
       const [artists, recommendations, activeFilters] = await Promise.all([
         storageManager.get('tracked-data', []),
         storageManager.get('recommendations-data', []),
-        storageManager.get('activeFilters', { country: 'everywhere', date: 'anytime', artist: 'all' })
+        storageManager.get('activeFilters', { country: 'everywhere', date: 'anytime', artist: 'all', favorites: false })
       ]);
 
       this.setState({

@@ -18,6 +18,7 @@
         background: var(--color-background-secondary-hover);
     }
 
+
     .image {
         flex: 0 0 50px;
 
@@ -114,11 +115,40 @@
         }
     }
 
+    .favorite-button {
+        position: absolute;
+        top: 0;
+        right: 70px;
+        background: transparent;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+        color: #999;
+        transition: color 0.2s ease-out;
+        padding: 4px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+
+        &:hover {
+            color: #d4af37;
+        }
+
+        &.favorited {
+            color: #f5f5dc;
+            text-shadow: 0 0 8px #d4af37, 0 0 16px rgba(212, 175, 55, 0.6);
+        }
+    }
+
     .event-spotify {
         margin-top: -1px;
+        margin-bottom: -1px;
     
         .button {
-            height: 20px;
+            height: 21px;
             font-size: 11px;
             text-shadow: 1px 1px 4px rgba(0,0,0, 0.3);
         }

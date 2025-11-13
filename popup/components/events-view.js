@@ -19,14 +19,14 @@ class EventsView extends HTMLElement {
     }
 
     async forceRerender() {
-        console.log('Force re-rendering events list...');
         const artists = await storageManager.get('tracked-data', []);
         store.setState({ artists });
         this.render();
     }
 
-    render() {
+    async render() {
         const { artists, activeFilters, collapsedEventFilterGroups } = store.getState();
+        const favoriteEvents = await storageManager.get('favorite-events', []);
 
         const allEvents = artists.flatMap(artist => 
             (artist.events || []).map(event => ({ ...event, artist }))
@@ -43,16 +43,19 @@ class EventsView extends HTMLElement {
         });
 
         // Apply artist filter on top of country/date filtering
-        const filteredEvents = activeFilters.artist === 'all'
+        let filteredEvents = activeFilters.artist === 'all'
             ? eventsFilteredByCountryAndDate
             : eventsFilteredByCountryAndDate.filter(event => event.artist.name === activeFilters.artist);
+
+        // Apply favorites filter if enabled
+        if (activeFilters.favorites) {
+            filteredEvents = filteredEvents.filter(event => favoriteEvents.map(id => parseInt(id)).includes(parseInt(event.id)));
+        }
         
         const filteredEventsIds = filteredEvents.map(event => event.id);
 
         const countryFilterGroups = getCountryFilterGroups(sortedEvents);
         const dateFilterGroups = getDateFilterGroups();
-        // Artist filter options should only depend on country and date filters, not artist selection
-        console.log('aaaaa', sortedEvents, eventsFilteredByCountryAndDate);
         const artistFilterGroups = getArtistFilterGroups(sortedEvents, eventsFilteredByCountryAndDate);
 
         this.shadowRoot.innerHTML = `
@@ -68,6 +71,7 @@ class EventsView extends HTMLElement {
                             ${filteredEvents.length > 0 ? sortedEvents.map(event => {
                                     const { country, code, cleanLocation } = getCountryAndFlag(event.location);
                                     const details = `${country}, ${cleanLocation}`;
+                                    const isFavorited = favoriteEvents.map(id => parseInt(id)).includes(parseInt(event.id));
                                     return `
                                     <tile-view class="event-tile ${filteredEventsIds.includes(event.id) ? '' : 'hidden'}"
                                         data-country="${normalizeCountry(country)}"
@@ -80,6 +84,8 @@ class EventsView extends HTMLElement {
                                         country-code="${code}"
                                         spotify-id="${event.artist.spotifyId}"
                                         event-url="${event.eventUrl || ''}"
+                                        event-id="${event.id}"
+                                        is-favorited="${isFavorited}"
                                         date="${parseInt(event.startsAt)}">
                                     </tile-view>
                                 `}).join('') : '<p>No upcoming events found.</p>'}
@@ -90,23 +96,52 @@ class EventsView extends HTMLElement {
             </div>
         `;
 
-        this.updateHeader(filteredEvents.length);
+        this.renderHeader(filteredEvents.length);
         this.updateFilterView([...countryFilterGroups, ...dateFilterGroups, ...artistFilterGroups], activeFilters, collapsedEventFilterGroups);
         this.attachEventListeners();
+    }
+
+    renderHeader(visibleEventsCount) {
+        const header = this.shadowRoot.querySelector('.panel-header');
+        if (!header) return;
+
+        const { activeFilters } = store.getState();
+        const showOnlyFavorites = activeFilters.favorites || false;
+        header.innerHTML = `
+            <button id="favorites-button" class="favorites-button ${showOnlyFavorites ? 'active' : ''}" title="Show only favorites">
+                ${showOnlyFavorites ? '★' : '☆'}
+            </button>
+            <h2><span class="count">${visibleEventsCount}</span> Events</h2>
+            <div class="header-buttons">
+                <button id="refresh-button" class="button primary refresh-events-button refresh-button" title="Refresh event list">&#x21bb;</button>
+            </div>
+        `;
     }
 
     updateHeader(visibleEventsCount) {
         const header = this.shadowRoot.querySelector('.panel-header');
         if (!header) return;
 
-        header.innerHTML = `
-            <h2><span class="count">${visibleEventsCount}</span> Events</h2>
-            <button id="refresh-button" class="button primary refresh-events-button refresh-button" title="Refresh event list">&#x21bb;</button>
-        `;
+        const { activeFilters } = store.getState();
+        const showOnlyFavorites = activeFilters.favorites || false;
+        
+        // Update count
+        const countSpan = header.querySelector('.count');
+        if (countSpan) {
+            countSpan.textContent = visibleEventsCount;
+        }
+        
+        // Update favorites button
+        const favoritesButton = header.querySelector('.favorites-button');
+        if (favoritesButton) {
+            favoritesButton.textContent = showOnlyFavorites ? '★' : '☆';
+            favoritesButton.classList.toggle('active', showOnlyFavorites);
+        }
     }
 
-    updateEventList() {
+    async updateEventList() {
         const { artists, activeFilters } = store.getState();
+        const favoriteEvents = await storageManager.get('favorite-events', []);
         const eventsList = this.shadowRoot.querySelectorAll('.events-list .event-tile');
 
         const allEvents = artists.flatMap(artist => 
@@ -123,9 +158,14 @@ class EventsView extends HTMLElement {
         });
 
         // Apply artist filter on top of country/date filtering
-        const filteredEvents = activeFilters.artist === 'all'
+        let filteredEvents = activeFilters.artist === 'all'
             ? eventsFilteredByCountryAndDate
             : eventsFilteredByCountryAndDate.filter(event => event.artist.name === activeFilters.artist);
+
+        // Apply favorites filter if enabled
+        if (activeFilters.favorites) {
+            filteredEvents = filteredEvents.filter(event => favoriteEvents.map(id => parseInt(id)).includes(parseInt(event.id)));
+        }
 
         const filteredEventsIds = filteredEvents.map(event => event.id);
 
@@ -214,6 +254,18 @@ class EventsView extends HTMLElement {
                 communicator.broadcast(MessageType.REQUEST_EVENTS_FETCH);
             });
             refreshButton.dataset.listenerAttached = 'true';
+        }
+
+        const favoritesButton = this.shadowRoot.getElementById('favorites-button');
+        if (favoritesButton && !favoritesButton.dataset.listenerAttached) {
+            favoritesButton.addEventListener('click', () => {
+                const currentFilters = store.getState().activeFilters;
+                const newFilters = { ...currentFilters, favorites: !currentFilters.favorites };
+                store.setState({ activeFilters: newFilters });
+                this.updateEventList();
+                this.updateHeader(this.shadowRoot.querySelectorAll('.events-list .event-tile:not(.hidden)').length);
+            });
+            favoritesButton.dataset.listenerAttached = 'true';
         }
 
         const filterView = this.shadowRoot.querySelector('filter-view');
